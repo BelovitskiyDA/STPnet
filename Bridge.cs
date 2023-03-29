@@ -18,11 +18,11 @@ namespace STPnet
             ports = new Dictionary<int, Port>();
         }
 
-        public Bridge(int id, int priority) 
+        public Bridge(int id, string priority) 
         {
             ports = new Dictionary<int, Port>();
             this.id = id;
-            this.priority = priority;
+            this.priority = Int32.Parse(priority, System.Globalization.NumberStyles.HexNumber);
             status = 0;
         }
 
@@ -68,7 +68,11 @@ namespace STPnet
 
             if (pocket.Memory < ports[portNumber].memory)
             {
-                ports[portNumber].memory = pocket.Memory;
+                if (ports[portNumber].status == 0)
+                {
+                    ports[portNumber].memory = pocket.Memory;
+                }
+                
                 foreach(var (k,p) in ports)
                 {
                     if (k == portNumber) continue;
@@ -173,7 +177,7 @@ namespace STPnet
         {
             foreach (var (k, p) in ports)
             {
-                if (mode == 1 && p.status == 1) continue;
+                if (mode == 1 && p.status != 0) continue;
                 p.memory = Int32.MaxValue;
             }
         }
