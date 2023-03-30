@@ -33,14 +33,37 @@ namespace STPnet
 
         public void DeletePort(int number)
         {
+            if (!ports.ContainsKey(number)) return;
+            Link link = ports[number].Link;
             ports.Remove(number);
+            link.Update();
         }
 
+        public void ClearPort(int number)
+        {
+            if (!ports.ContainsKey(number)) return;
+            ports[number].LinkId = -1;
+            ports[number].Link.Update();
+        }
+        public bool PortIsEmpty(int number)
+        {
+            if (!ports.ContainsKey(number)) return false;
+            if (ports[number].LinkId == -1) return true;
+            return false;
+        }
+
+        public void Delete()
+        {
+            foreach (var (k, p) in ports)
+            {
+                this.DeletePort(p.number);
+            }
+        }
         public void FirstPocket(int mode)
         {
             foreach (var (k, p) in ports)
             {
-                if (p.Link != null)
+                if (p.LinkId != -1)
                 {
                     BPDU newPocket = new BPDU();
                     p.Link.Translate(id, p.number, newPocket, mode);
@@ -86,8 +109,12 @@ namespace STPnet
                         {
                             newPocket.Memory = pocket.Memory + weight;
                         }
+
+                        if (p.LinkId != -1)
+                        {
+                            p.Link.Translate(id, p.number, newPocket, mode);
+                        }
                         
-                        p.Link.Translate(id, p.number, newPocket, mode);
                     }
                 }
 

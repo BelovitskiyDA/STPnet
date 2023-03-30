@@ -11,11 +11,16 @@ namespace STPnet
         public Dictionary<int, Link> links;
         public Dictionary<int, Bridge> bridges;
 
+        //private int maxBridgeId;
+        private int maxLinkId;
+
         public Net() 
         {
+            //maxBridgeId = 0;
+            maxLinkId = 0;
             links = new Dictionary<int, Link>();
             bridges = new Dictionary<int, Bridge>();
-
+            /*
             Bridge bridge1 = new Bridge(1,"A7");
             bridges.Add(bridge1.id, bridge1);
             bridge1.AddPort(1);
@@ -60,7 +65,61 @@ namespace STPnet
             links.Add(link5.id, link5);
 
             Link link6 = new Link(6, bridge2, 2, bridge4, 2, 100);
-            links.Add(link6.id, link6);
+            links.Add(link6.id, link6);*/
+        }
+
+        public void AddBridge(int id, string priority)
+        {
+            Bridge bridge = new Bridge(id, priority);
+            bridges.Add(bridge.id, bridge);
+        }
+
+        public void DeleteBridge(int idBridge)
+        {
+            if (!bridges.ContainsKey(idBridge)) return;
+            bridges[idBridge].Delete();
+            bridges[idBridge] = null;
+        }
+        public void AddPort(int idBridge, int number)
+        {
+            if (!bridges.ContainsKey(idBridge)) return;
+            bridges[idBridge].AddPort(number);
+        }
+
+        public void DeletePort(int idBridge, int number)
+        {
+            if (!bridges.ContainsKey(idBridge)) return;
+            bridges[idBridge].DeletePort(number);
+        }
+
+        public void AddLink(int idBridge1, int portNumber1, int idBridge2, int portNumber2, int weight)
+        {
+            if (!bridges.ContainsKey(idBridge1) || !bridges.ContainsKey(idBridge2)) return;
+
+
+            Link link = new Link(++maxLinkId, bridges[idBridge1], portNumber1, bridges[idBridge2], portNumber2, weight);
+            links.Add(link.id, link);
+        }
+
+        public void DeleteLink(int idLink)
+        {
+            if (!links.ContainsKey(idLink)) return;
+            links[idLink].Delete();
+            links[idLink] = null;
+        }
+
+        public void AddConnect(int idLink, int idBridge, int portNumber)
+        {
+            if (!links.ContainsKey(idLink)) return;
+            if (!bridges.ContainsKey(idBridge)) return;
+            ///////// TODO
+        }
+
+        public void DisconnectLink(int idLink, int idBridge, int portNumber)
+        {
+            if (!bridges.ContainsKey(idBridge)) return;
+            if (!links.ContainsKey(idLink)) return;
+            links[idLink].Disconnect(bridges[idBridge], portNumber);
         }
 
         public void RootBridge()

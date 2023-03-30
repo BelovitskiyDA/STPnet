@@ -11,16 +11,25 @@ using STPnet;
 
 namespace STPnetApp
 {
-    public partial class Form1 : Form
+    public partial class FormMain : Form
     {
-        public Form1()
+        public FormMain()
         {
             InitializeComponent();
         }
 
-        private void Form1_Load(object sender, EventArgs e)
+        Net net;
+
+        private void FormMain_Load(object sender, EventArgs e)
         {
-            
+            net = new Net();
         }
+
+        private void buttonAddLink_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        
     }
 }

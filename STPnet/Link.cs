@@ -40,13 +40,58 @@ namespace STPnet
             /*this.OutBridge = OutBridge;
             this.outputPortNumber = outputPortNumber;*/
 
+            InBridge.ports[inputPortNumber].LinkId = this.id;
             InBridge.ports[inputPortNumber].Link = this;
+            OutBridge.ports[outputPortNumber].LinkId = this.id;
             OutBridge.ports[outputPortNumber].Link = this;
 
             this.weight = weight;
 
         }
 
+        public bool IsHub()
+        {
+            if (connections.Count == 2)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        public void Update()
+        {
+            foreach (var (b, pn) in connections)
+            {
+                if (b.ports[pn].LinkId == -1)
+                {
+                    if (connections.Count == 2)
+                    {
+                        foreach(var (b2, pn2) in connections)
+                        {
+                            b2.ports[pn2].LinkId = -1;
+                        }
+                    }
+                    else
+                    {
+                        connections.Remove(b);
+                    }
+                }
+            }
+        }
+
+        public void Delete()
+        {
+            foreach (var (b, pn) in connections)
+            {
+                b.ports[pn].LinkId = -1;       
+            }
+        }
+
+        public void Disconnect(Bridge bridge, int portNumber)
+        {
+            bridge.ports[portNumber].LinkId = -1;
+            this.Update();
+        }
         public void Translate(int bridgeId, int portNumber, BPDU pocket, int mode)
         {
             /*if (bridgeId == InBridge.id && PortNumber == inputPortNumber)

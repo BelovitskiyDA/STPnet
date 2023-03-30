@@ -11,7 +11,7 @@ namespace STPnet
         public int number;
         public int status;
         public int memory;
-        //public int LinkId;
+        public int LinkId;
         public Link Link;
 
         public Port() { }
@@ -21,6 +21,7 @@ namespace STPnet
             this.number = number;
             status = 0;
             memory = Int32.MaxValue;
+            LinkId = -1;
         }
 
     }
