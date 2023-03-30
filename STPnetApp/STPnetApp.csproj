@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\STPnet\BPDU.cs" Link="Model\BPDU.cs" />
+    <Compile Include="..\STPnet\Bridge.cs" Link="Model\Bridge.cs" />
+    <Compile Include="..\STPnet\Link.cs" Link="Model\Link.cs" />
+    <Compile Include="..\STPnet\Net.cs" Link="Model\Net.cs" />
+    <Compile Include="..\STPnet\Port.cs" Link="Model\Port.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\STPnet\STPnet.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Model\" />
+  </ItemGroup>
+
+</Project>

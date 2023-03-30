@@ -25,7 +25,6 @@ namespace STPnet
             this.priority = Int32.Parse(priority, System.Globalization.NumberStyles.HexNumber);
             status = 0;
         }
-
         public void AddPort(int number)
         {
             Port port = new Port(number);

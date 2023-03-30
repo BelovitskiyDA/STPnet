@@ -22,5 +22,6 @@ namespace STPnet
             status = 0;
             memory = Int32.MaxValue;
         }
+
     }
 }
