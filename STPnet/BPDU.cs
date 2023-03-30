@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace STPnet
 {
-    class BPDU
+    public class BPDU
     {
         private int memory;
 

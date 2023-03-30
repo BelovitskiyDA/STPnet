@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace STPnet
 {
-    class Port
+    public class Port
     {
         public int number;
         public int status;

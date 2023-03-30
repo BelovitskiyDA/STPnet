@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace STPnet
 {
-    class Link
+    public class Link
     {
         public int id;
         public Dictionary<Bridge, int> connections;

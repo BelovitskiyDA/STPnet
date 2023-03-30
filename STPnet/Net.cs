@@ -6,22 +6,20 @@ using System.Threading.Tasks;
 
 namespace STPnet
 {
-    class Net
+    public class Net
     {
         public Dictionary<int, Link> links;
         public Dictionary<int, Bridge> bridges;
 
-        //private int maxBridgeId;
         private int maxLinkId;
 
         public Net() 
         {
-            //maxBridgeId = 0;
             maxLinkId = 0;
             links = new Dictionary<int, Link>();
             bridges = new Dictionary<int, Bridge>();
-            /*
-            Bridge bridge1 = new Bridge(1,"A7");
+
+            Bridge bridge1 = new Bridge(1, "A7");
             bridges.Add(bridge1.id, bridge1);
             bridge1.AddPort(1);
             bridge1.AddPort(2);
@@ -65,7 +63,7 @@ namespace STPnet
             links.Add(link5.id, link5);
 
             Link link6 = new Link(6, bridge2, 2, bridge4, 2, 100);
-            links.Add(link6.id, link6);*/
+            links.Add(link6.id, link6);
         }
 
         public void AddBridge(int id, string priority)

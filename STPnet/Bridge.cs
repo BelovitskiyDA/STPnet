@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace STPnet
 {
-    class Bridge
+    public class Bridge
     {
         public int id;
         public int priority;
