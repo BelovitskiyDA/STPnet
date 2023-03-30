@@ -181,8 +181,10 @@ namespace STPnet
             foreach (var (kl,l) in links)
             {
                 Console.WriteLine($"link id: {kl}");
-                Console.WriteLine($"bridge id: {l.InBridge.id} port number: {l.inputPortNumber}");
-                Console.WriteLine($"bridge id: {l.OutBridge.id} port number: {l.outputPortNumber}");
+                foreach (var (b, pn) in l.connections)
+                {
+                    Console.WriteLine($"bridge id: {b.id} port number: {pn}");
+                }
             }
 
             Console.WriteLine("\n\n\n\n");
