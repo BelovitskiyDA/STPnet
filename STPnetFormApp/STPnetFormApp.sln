@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.32901.82
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "STPnetFormApp", "STPnetFormApp.csproj", "{EA7A1D1B-610B-41B7-A896-0AA756736C1E}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STPnet", "..\STPnet\STPnet.csproj", "{00ED7C5D-4D27-4923-8450-B7EB40437909}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "STPnet", "..\STPnet\STPnet.csproj", "{5949D85C-67BD-41B6-BE8B-70E374F0388C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{EA7A1D1B-610B-41B7-A896-0AA756736C1E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EA7A1D1B-610B-41B7-A896-0AA756736C1E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EA7A1D1B-610B-41B7-A896-0AA756736C1E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{00ED7C5D-4D27-4923-8450-B7EB40437909}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{00ED7C5D-4D27-4923-8450-B7EB40437909}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{00ED7C5D-4D27-4923-8450-B7EB40437909}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{00ED7C5D-4D27-4923-8450-B7EB40437909}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5949D85C-67BD-41B6-BE8B-70E374F0388C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5949D85C-67BD-41B6-BE8B-70E374F0388C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5949D85C-67BD-41B6-BE8B-70E374F0388C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5949D85C-67BD-41B6-BE8B-70E374F0388C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
