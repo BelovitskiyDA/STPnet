@@ -212,6 +212,19 @@ namespace STPnetApp
             links[id].y = y;
         }
 
+        public void UpdateLinks()
+        {
+            foreach (var (i, ps) in links)
+            {
+                bool flagDelete = true;
+                foreach (var (idb,point) in ps.ports)
+                {
+                    if (!bridges.ContainsKey(idb)) continue;
+                    if (!bridges[idb].ports.ContainsKey(point.id)) continue;
+                }
+                if (flagDelete) links.Remove(i);
+            }
+        }
 
         public void Print(Graphics g, Net net)
         {

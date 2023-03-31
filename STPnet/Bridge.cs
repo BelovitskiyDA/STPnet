@@ -34,9 +34,10 @@ namespace STPnet
         public void DeletePort(int number)
         {
             if (!ports.ContainsKey(number)) return;
+            ports[number].LinkId = -1;
             Link link = ports[number].Link;
-            ports.Remove(number);
             link.Update();
+            ports.Remove(number);
         }
 
         public void ClearPort(int number)

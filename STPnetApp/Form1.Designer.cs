@@ -113,7 +113,7 @@ namespace STPnetApp
             this.editBridgeToolStripMenuItem,
             this.deleteBridgeToolStripMenuItem});
             this.contextMenuStripBridge.Name = "contextMenuStripBridge";
-            this.contextMenuStripBridge.Size = new System.Drawing.Size(250, 133);
+            this.contextMenuStripBridge.Size = new System.Drawing.Size(250, 100);
             // 
             // addPortToolStripMenuItem
             // 
@@ -133,6 +133,7 @@ namespace STPnetApp
             this.deleteBridgeToolStripMenuItem.Name = "deleteBridgeToolStripMenuItem";
             this.deleteBridgeToolStripMenuItem.Size = new System.Drawing.Size(249, 32);
             this.deleteBridgeToolStripMenuItem.Text = "Удалить мост";
+            this.deleteBridgeToolStripMenuItem.Click += new System.EventHandler(this.deleteBridgeToolStripMenuItem_Click);
             // 
             // FormMain
             // 

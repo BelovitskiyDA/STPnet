@@ -74,6 +74,17 @@ namespace STPnetApp
             }
         }
 
+        private void deleteBridgeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            net.DeleteBridge(idObjectChoose1);
+            net.UpdateLinks();
+            nw.DeleteBridge(idObjectChoose1);
+            nw.UpdateLinks();
+
+            ClearStrip();
+            Refresh();
+        }
+
         bool flagMove = false;
 
         private void FormMain_Load(object sender, EventArgs e)

@@ -83,7 +83,8 @@ namespace STPnet
         {
             if (!bridges.ContainsKey(idBridge)) return;
             bridges[idBridge].Delete();
-            bridges[idBridge] = null;
+            //bridges[idBridge] = null;
+            bridges.Remove(idBridge);
         }
         public void AddPort(int idBridge, int number)
         {
@@ -141,6 +142,20 @@ namespace STPnet
             links[idLink].Disconnect(bridges[idBridge], portNumber);
         }
 
+        public void UpdateLinks()
+        {
+            foreach(var (i,l) in links)
+            {
+                bool flagDelete = true;
+                foreach (var (b,pn) in l.connections)
+                {
+                    if (!bridges.ContainsKey(b.id)) continue;
+                    if (!bridges[b.id].ports.ContainsKey(pn)) continue;
+                    if (b.ports[pn].LinkId != -1) flagDelete = false;
+                }
+                if (flagDelete) links.Remove(i);
+            }
+        }
         public void RootBridge()
         {
             if (links == null || bridges == null)
