@@ -233,6 +233,13 @@ namespace STPnetApp
                 PrintBridge(g, b);
                 foreach(var (j,p) in b.ports)
                 {
+                    if (!bridges[i].ports.ContainsKey(j))
+                    {
+                        Point point = new();
+                        point.x = 30;
+                        point.y = 30;
+                        AddPort(i,j,point);
+                    }
                     PrintPort(g,b.id, p);
                 }
             }

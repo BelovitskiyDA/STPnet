@@ -85,6 +85,34 @@ namespace STPnetApp
             Refresh();
         }
 
+        private void addPortToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int number = 0;
+            PortDialog pd = new PortDialog();
+            pd.ShowDialog();
+            if (pd.DialogResult == DialogResult.OK)
+            {
+                number = pd.number;
+                if (number != 0)
+                {
+                    net.AddPort(idObjectChoose1, number);
+                }
+            }
+            ClearStrip();
+            Refresh();
+        }
+
+        private void deletePortToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            net.DeletePort(idBridgeChoose1, idObjectChoose1);
+            net.UpdateLinks();
+            nw.DeletePort(idBridgeChoose1, idObjectChoose1);
+            nw.UpdateLinks();
+
+            ClearStrip();
+            Refresh();
+        }
+
         bool flagMove = false;
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -241,6 +269,11 @@ namespace STPnetApp
                 {
                     // contextMenuBridge
                     contextMenuStripBridge.Show(Cursor.Position);
+                }
+                else if (type == 2)
+                {
+                    // contextMenuPort
+                    contextMenuStripPort.Show(Cursor.Position);
                 }
                 else if (type == 3)
                 {
