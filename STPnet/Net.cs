@@ -62,8 +62,9 @@ namespace STPnet
             Link link5 = new Link(5, bridge5, 1, bridge2, 3, 19);
             links.Add(link5.id, link5);
 
-            Link link6 = new Link(6, bridge2, 2, bridge4, 2, 100);
-            links.Add(link6.id, link6);
+            maxLinkId = 5;
+            /*Link link6 = new Link(6, bridge2, 2, bridge4, 2, 100);
+            links.Add(link6.id, link6);*/
         }
 
         public void AddBridge(int id, string priority)
@@ -90,15 +91,26 @@ namespace STPnet
             bridges[idBridge].DeletePort(number);
         }
 
+        public bool PortIsEmpty(int idBridge, int number)
+        {
+            if (!bridges.ContainsKey(idBridge)) return false;
+            if (!bridges[idBridge].ports.ContainsKey(number)) return false;
+            if (bridges[idBridge].ports[number].LinkId == -1) return true;
+            return false;
+        }
         public void AddLink(int idBridge1, int portNumber1, int idBridge2, int portNumber2, int weight)
         {
             if (!bridges.ContainsKey(idBridge1) || !bridges.ContainsKey(idBridge2)) return;
-
+            if (bridges[idBridge1].ports[portNumber1].LinkId != -1 || bridges[idBridge2].ports[portNumber2].LinkId != -1) return;
 
             Link link = new Link(++maxLinkId, bridges[idBridge1], portNumber1, bridges[idBridge2], portNumber2, weight);
             links.Add(link.id, link);
         }
-
+        public void EditLink(int idLink, int weight)
+        {
+            if (!links.ContainsKey(idLink)) return;
+            links[idLink].weight = weight;
+        }
         public void DeleteLink(int idLink)
         {
             if (!links.ContainsKey(idLink)) return;
@@ -110,7 +122,8 @@ namespace STPnet
         {
             if (!links.ContainsKey(idLink)) return;
             if (!bridges.ContainsKey(idBridge)) return;
-            ///////// TODO
+            if (bridges[idBridge].ports[portNumber].LinkId != -1) return;
+            links[idLink].connections.Add(bridges[idBridge], portNumber);
         }
 
         public void DisconnectLink(int idLink, int idBridge, int portNumber)
