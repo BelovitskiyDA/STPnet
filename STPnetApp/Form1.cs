@@ -52,7 +52,7 @@ namespace STPnetApp
         {
             if (e.Button == MouseButtons.Left)
             {
-                nw.Find(e.X, e.Y, out int type, out int id, out int idb);
+                nw.Find(e.X, e.Y, out int type, out int id, out int idb, out int idp);
                 Debug.WriteLine(type.ToString());
                 if (type == 0) return;
                 if (type == 1)

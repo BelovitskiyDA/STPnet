@@ -43,16 +43,17 @@ namespace STPnetApp
             return (int)((y - b)/k);
         }
 
-        public static void FunctParam(int x1, int x2, int y1, int y2, out double k, out double b)
+        public static void FunctParam(int x1, int y1, int x2, int y2, out double k, out double b)
         {
             k = (double)(y2 - y1) / (x2 - x1);
             b = y1 - k * x1;
         }
-        public void Find(int x, int y, out int type, out int id, out int idb)
+        public void Find(int x, int y, out int type, out int id, out int idb, out int idp)
         {
             type = 0;
             id = 0;
             idb = -1;
+            idp = -1;
             foreach (var (i, ps) in bridges)
             {
                 if ((x > ps.x - hBridge/2) && (x < ps.x + hBridge/2) && (y > ps.y - hBridge/2) && (y < ps.y + hBridge/2))
@@ -81,12 +82,16 @@ namespace STPnetApp
                 {
                     int x2 = p.x;
                     int y2 = p.y;
+                    if (!((x - x1) * (x - x2) <= 0 && (y - y1) * (y - y2) <= 0)) continue;
+
                     FunctParam(x1, y1, x2, y2, out double k, out double b);
 
-                    if (Math.Abs(x-Funct(x,k,b))<hLink || Math.Abs(y - FunctReverse(y, k, b)) < hLink)
+                    if ((Math.Abs(y-Funct(x,k,b))<hLink/2) || (Math.Abs(x - FunctReverse(y, k, b)) < hLink/2))
                     {
                         type = 3;
                         id = i;
+                        idb = j;
+                        idp = p.id;
                         return;
                     }
                 }
@@ -168,14 +173,14 @@ namespace STPnetApp
             bridges[idBridge].ports[idPort].x = x;
             bridges[idBridge].ports[idPort].y = y;
         }
-        public void AddLink(int id, int idp1, Point p1, int idp2, Point p2)
+        public void AddLink(int id, int idb1, Point p1, int idb2, Point p2)
         {
             PointStruct ps = new();
             ps.x = (int)((p1.x+p2.x)/2);
             ps.y = (int)((p1.y + p2.y)/2);
             ps.ports = new Dictionary<int, Point>();
-            ps.ports.Add(idp1, p1);
-            ps.ports.Add(idp2, p2);
+            ps.ports.Add(idb1, p1);
+            ps.ports.Add(idb2, p2);
             links.Add(id, ps);
         }
         public void DeleteLink(int id)
@@ -184,18 +189,20 @@ namespace STPnetApp
             links.Remove(id);
         }
 
-        public void AddConnectionLink(int id, int idp, Point p)
+        public void AddConnectionLink(int id, int idb, Point p)
         {
             PointStruct ps = new();
-            ps.ports.Add(idp, p);
+            ps.ports.Add(idb, p);
             links.Add(id, ps);
         }
 
-        public void DeleteConnectionLink(int id, int idp)
+        public void DeleteConnectionLink(int id, int idb, int idp)
         {
             if (!links.ContainsKey(id)) return;
-            if (!links[id].ports.ContainsKey(idp)) return;
-            links[id].ports.Remove(idp);
+            if (!links[id].ports.ContainsKey(idb)) return;
+            if (links[id].ports[idb].id != idp) return;
+            links[id].ports.Remove(idb);
+            if (links[id].ports.Count == 1) DeleteLink(id);
         }
 
         public void EditPosLink(int id, int x, int y)
