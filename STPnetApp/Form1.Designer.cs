@@ -63,6 +63,8 @@ namespace STPnetApp
             this.Name = "FormMain";
             this.Text = "STPnet";
             this.Load += new System.EventHandler(this.FormMain_Load);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseDown);
+            this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseMove);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);

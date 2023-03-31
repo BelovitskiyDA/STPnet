@@ -8,7 +8,7 @@ using STPnet;
 
 namespace STPnetApp
 {
-    class PointStruct
+    public class PointStruct
     {
         public int x;
         public int y;
@@ -16,16 +16,17 @@ namespace STPnetApp
     }
     public class Point
     {
+        public int id;
         public int x;
         public int y;
     }
-    class NetView
+    public class NetView
     {
         public Dictionary<int, PointStruct> bridges;
         public Dictionary<int, PointStruct> links;
-        public int hBridge = 40;
-        public int hPort = 5;
-        public int hLink = 2;
+        public int hBridge = 200;
+        public int hPort = 40;
+        public int hLink = 10;
 
         public NetView()
         {
@@ -47,23 +48,24 @@ namespace STPnetApp
             k = (double)(y2 - y1) / (x2 - x1);
             b = y1 - k * x1;
         }
-        public void Find(int x, int y, out int type, out int id)
+        public void Find(int x, int y, out int type, out int id, out int idb)
         {
             type = 0;
             id = 0;
-
+            idb = -1;
             foreach (var (i, ps) in bridges)
             {
-                if ((x > ps.x - hBridge) && (x < ps.x + hBridge) && (y > ps.y - hBridge) && (y < ps.y + hBridge))
+                if ((x > ps.x - hBridge/2) && (x < ps.x + hBridge/2) && (y > ps.y - hBridge/2) && (y < ps.y + hBridge/2))
                 {
                     type = 1;
                     id = i;
                     foreach (var (j, p) in ps.ports)
                     {
-                        if ((x > p.x - hPort) && (x < p.x + hPort) && (y > p.y - hPort) && (y < p.y + hPort))
+                        if ((x > p.x - hPort/2) && (x < p.x + hPort/2) && (y > p.y - hPort/2) && (y < p.y + hPort/2))
                         {
                             type = 2;
                             id = j;
+                            idb = i;
                             return;
                         }
                     }
@@ -116,8 +118,8 @@ namespace STPnetApp
 
             foreach(var (i,p) in bridges[id].ports)
             {
-                p.x = p.x + (oldx - x);
-                p.y = p.y + (oldy - y);
+                p.x = p.x + (x - oldx);
+                p.y = p.y + (y - oldy);
             }
             //edit pos for ports
         }
@@ -127,14 +129,14 @@ namespace STPnetApp
             int y = p.y;
             if (!bridges.ContainsKey(idBridge)) return;
             int bx = bridges[idBridge].x;
-            if (Math.Abs(x - bx)>(hBridge-hPort))
+            if (Math.Abs(x - bx)>(hBridge/2 - hPort/2))
             {
-                x = (int)(bx + (x - bx) / (Math.Abs(x - bx)) * (hBridge - hPort));
+                x = (int)(bx + (x - bx) / (Math.Abs(x - bx)) * (hBridge/2 - hPort/2));
             }
             int by = bridges[idBridge].y;
-            if (Math.Abs(y - by) > (hBridge - hPort))
+            if (Math.Abs(y - by) > (hBridge/2 - hPort/2))
             {
-                y = (int)(by + (y - by) / (Math.Abs(y - by)) * (hBridge - hPort));
+                y = (int)(by + (y - by) / (Math.Abs(y - by)) * (hBridge/2 - hPort/2));
             }
 
             p.x = x;
@@ -153,14 +155,14 @@ namespace STPnetApp
             if (!bridges[idBridge].ports.ContainsKey(idPort)) return;
 
             int bx = bridges[idBridge].x;
-            if (Math.Abs(x - bx) > (hBridge - hPort))
+            if (Math.Abs(x - bx) > (hBridge/2 - hPort/2))
             {
-                x = (int)(bx + (x - bx) / (Math.Abs(x - bx)) * (hBridge - hPort));
+                x = (int)(bx + (x - bx) / (Math.Abs(x - bx)) * (hBridge/2 - hPort/2));
             }
             int by = bridges[idBridge].y;
-            if (Math.Abs(y - by) > (hBridge - hPort))
+            if (Math.Abs(y - by) > (hBridge/2 - hPort/2))
             {
-                y = (int)(by + (y - by) / (Math.Abs(y - by)) * (hBridge - hPort));
+                y = (int)(by + (y - by) / (Math.Abs(y - by)) * (hBridge/2 - hPort/2));
             }
 
             bridges[idBridge].ports[idPort].x = x;
@@ -235,7 +237,7 @@ namespace STPnetApp
 
             if (!bridges.ContainsKey(bridge.id))
             {
-                AddBridge(bridge.id, 10, 10);
+                AddBridge(bridge.id, 400, 400);
                 foreach(var (i,p) in bridge.ports)
                 {
                     Point point = new Point();
@@ -247,7 +249,7 @@ namespace STPnetApp
 
             int bx = bridges[bridge.id].x;
             int by = bridges[bridge.id].y;
-            Rectangle rect = new Rectangle(bx - hBridge, bx + hBridge, by - hBridge, by + hBridge);
+            Rectangle rect = new Rectangle(bx - hBridge/2, by - hBridge/2, hBridge, hBridge);
             g.DrawRectangle(pen, rect);
             g.DrawString(drawString, drawFont, drawBrush, bx, by);
         }
@@ -275,39 +277,58 @@ namespace STPnetApp
             Point point = bridges[idBridge].ports[port.number];
             int px = point.x;
             int py = point.y;
-            Rectangle rect = new Rectangle(px - hPort, px + hPort, py - hPort, py + hPort);
+            Rectangle rect = new Rectangle(px - hPort/2, py - hPort/2, hPort, hPort);
             g.DrawRectangle(pen, rect);
             g.DrawString(drawString, drawFont, drawBrush, px, py);
         }
 
         public void PrintLink(Graphics g, Link link)
         {
-            Pen pen = new Pen(Color.Black, 1);
+            Pen pen = new Pen(Color.Gray, (int)(hLink/2));
 
             if (!links.ContainsKey(link.id))
             {
                 var pair1 = link.connections.ElementAt(0);
                 var pair2 = link.connections.ElementAt(1);
-                AddLink(link.id, pair1.Value, bridges[pair1.Key.id].ports[pair1.Value], pair2.Value, bridges[pair2.Key.id].ports[pair2.Value]);
+
+                Point p1 = bridges[pair1.Key.id].ports[pair1.Value];
+                p1.id = pair1.Value;
+                Point p2 = bridges[pair2.Key.id].ports[pair2.Value];
+                p2.id = pair2.Value;
+                AddLink(link.id, pair1.Key.id, p1, pair2.Key.id, p2);
 
                 int count = link.connections.Count;
                 for (int i = 2; count > i; i++)
                 {
                     var pair = link.connections.ElementAt(i-1);
-                    AddConnectionLink(link.id, pair.Value, bridges[pair.Key.id].ports[pair.Value]);
+                    Point p = bridges[pair.Key.id].ports[pair.Value];
+                    p.id = pair.Value;
+                    AddConnectionLink(link.id, pair.Key.id, p);
                 }
             }
 
-            int lx = links[link.id].x;
-            int ly = links[link.id].y;
-            foreach (var (i,p) in links[link.id].ports)
+            int lx, ly;
+            if (links[link.id].ports.Count == 2)
+            {    
+                var l1 = links[link.id].ports.ElementAt(0).Value;
+                var l2 = links[link.id].ports.ElementAt(1).Value;
+                lx = links[link.id].x = (int)((l1.x + l2.x) / 2);
+                ly = links[link.id].y = (int)((l1.y + l2.y) / 2);
+                g.DrawLine(pen, l1.x, l1.y, l2.x, l2.y);
+            }
+            else
             {
-                g.DrawLine(pen, lx,ly,p.x,p.y);
+                lx = links[link.id].x;
+                ly = links[link.id].y;
+                foreach (var (i, p) in links[link.id].ports)
+                {
+                    g.DrawLine(pen, lx, ly, p.x, p.y);
+                }
+
+                Rectangle rect = new Rectangle(lx - hLink / 2, ly - hLink / 2, hLink, hLink);
+                g.DrawRectangle(pen, rect);
             }
 
-
-            Rectangle rect = new Rectangle(lx - hLink, lx + hLink, ly - hLink, ly + hLink);
-            g.DrawRectangle(pen, rect);
             String drawString = link.weight.ToString();
             Font drawFont = new Font("Arial", 10);
             SolidBrush drawBrush = new SolidBrush(Color.Black);
