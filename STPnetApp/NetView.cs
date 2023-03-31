@@ -24,9 +24,9 @@ namespace STPnetApp
     {
         public Dictionary<int, PointStruct> bridges;
         public Dictionary<int, PointStruct> links;
-        public int hBridge = 200;
-        public int hPort = 40;
-        public int hLink = 10;
+        public int hBridge = 200; // need %2
+        public int hPort = 50; // need %2
+        public int hLink = 10; // need %2
 
         public NetView()
         {
@@ -191,9 +191,8 @@ namespace STPnetApp
 
         public void AddConnectionLink(int id, int idb, Point p)
         {
-            PointStruct ps = new();
-            ps.ports.Add(idb, p);
-            links.Add(id, ps);
+            if (links[id].ports.ContainsKey(idb)) return;
+            links[id].ports.Add(idb, p);
         }
 
         public void DeleteConnectionLink(int id, int idb, int idp)
@@ -236,6 +235,7 @@ namespace STPnetApp
                     if (!bridges[i].ports.ContainsKey(j))
                     {
                         Point point = new();
+                        point.id = j;
                         point.x = 30;
                         point.y = 30;
                         AddPort(i,j,point);
@@ -252,15 +252,18 @@ namespace STPnetApp
 
         public void PrintBridge(Graphics g, Bridge bridge)
         {
-            Pen pen = new Pen(Color.Black, 1);
+            int penWeight = 5;
+            Pen pen = new Pen(Color.Black, penWeight);
+            SolidBrush drawBrush = new SolidBrush(Color.Black);
             if (bridge.status == 1)
             {
-                pen = new Pen(Color.Green, 1);
+                pen = new Pen(Color.Green, penWeight);
+                drawBrush = new SolidBrush(Color.Green);
             }
 
-            String drawString = bridge.id.ToString();
-            Font drawFont = new Font("Arial", 10);
-            SolidBrush drawBrush = new SolidBrush(Color.Black);
+            String drawString = $"{bridge.id} ({bridge.priority.ToString("X")})";
+            Font drawFont = new Font("Arial", 20);
+            
 
             if (!bridges.ContainsKey(bridge.id))
             {
@@ -268,6 +271,7 @@ namespace STPnetApp
                 foreach(var (i,p) in bridge.ports)
                 {
                     Point point = new Point();
+                    point.id = p.number;
                     point.x = 30;
                     point.y = 30;
                     AddPort(bridge.id, i, point);
@@ -278,35 +282,41 @@ namespace STPnetApp
             int by = bridges[bridge.id].y;
             Rectangle rect = new Rectangle(bx - hBridge/2, by - hBridge/2, hBridge, hBridge);
             g.DrawRectangle(pen, rect);
-            g.DrawString(drawString, drawFont, drawBrush, bx, by);
+            g.DrawString(drawString, drawFont, drawBrush, bx - (int)(hBridge / 4), by - (int)(hBridge / 4));
         }
 
         public void PrintPort(Graphics g, int idBridge, Port port)
         {
-            Pen pen = new Pen(Color.Black, 1);
+            int penWeight = 3;
+            Pen pen = new Pen(Color.Black, penWeight);
+            SolidBrush drawBrush = new SolidBrush(Color.Black);
             if (port.status == 1)
             {
-                pen = new Pen(Color.Green, 1);
+                pen = new Pen(Color.Green, penWeight);
+                drawBrush = new SolidBrush(Color.Green);
             }
             else if (port.status == 2)
             {
-                pen = new Pen(Color.Blue, 1);
+                pen = new Pen(Color.Blue, penWeight);
+                drawBrush = new SolidBrush(Color.Blue);
             }
             else if (port.status == 3)
             {
-                pen = new Pen(Color.Red, 1);
+                pen = new Pen(Color.Red, penWeight);
+                drawBrush = new SolidBrush(Color.Red);
             }
 
-            String drawString = port.number.ToString();
-            Font drawFont = new Font("Arial", 5);
-            SolidBrush drawBrush = new SolidBrush(Color.Black);
+            string memory = (port.memory == Int32.MaxValue ? "inf" : port.memory.ToString());
+            String drawString = $"{port.number} ({memory})";
+            Font drawFont = new Font("Arial", 8);
+            
 
             Point point = bridges[idBridge].ports[port.number];
             int px = point.x;
             int py = point.y;
             Rectangle rect = new Rectangle(px - hPort/2, py - hPort/2, hPort, hPort);
             g.DrawRectangle(pen, rect);
-            g.DrawString(drawString, drawFont, drawBrush, px, py);
+            g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
         }
 
         public void PrintLink(Graphics g, Link link)
@@ -334,6 +344,15 @@ namespace STPnetApp
                     Point p = bridges[pair.Key.id].ports[pair.Value];
                     p.id = pair.Value;
                     AddConnectionLink(link.id, pair.Key.id, p);
+                }
+            }
+
+            foreach(var (b,pn) in link.connections)
+            {
+                if (!links[link.id].ports.ContainsKey(b.id))
+                {
+                    Point p = bridges[b.id].ports[pn];
+                    AddConnectionLink(link.id, b.id, p);
                 }
             }
 

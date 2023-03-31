@@ -62,9 +62,10 @@ namespace STPnet
             Link link5 = new Link(5, bridge5, 1, bridge2, 3, 19);
             links.Add(link5.id, link5);
 
-            maxLinkId = 5;
-            /*Link link6 = new Link(6, bridge2, 2, bridge4, 2, 100);
-            links.Add(link6.id, link6);*/
+            Link link6 = new Link(6, bridge2, 2, bridge4, 2, 100);
+            links.Add(link6.id, link6);
+
+            maxLinkId = 6;
         }
 
         public void AddBridge(int id, string priority)
@@ -132,7 +133,10 @@ namespace STPnet
             if (!links.ContainsKey(idLink)) return;
             if (!bridges.ContainsKey(idBridge)) return;
             if (bridges[idBridge].ports[portNumber].LinkId != -1) return;
+            if (links[idLink].connections.ContainsKey(bridges[idBridge])) return;
             links[idLink].connections.Add(bridges[idBridge], portNumber);
+            bridges[idBridge].ports[portNumber].LinkId = links[idLink].id;
+            bridges[idBridge].ports[portNumber].Link = links[idLink];
         }
 
         public void DisconnectLink(int idLink, int idBridge, int portNumber)
@@ -212,9 +216,8 @@ namespace STPnet
             }
         }
 
-        public void ResetMemory()
+        public void ResetMemory(int mode)
         {
-            int mode = 1;
             foreach (var (kb, b) in bridges)
             {
                 b.ResetMemory(mode);
@@ -229,9 +232,8 @@ namespace STPnet
                 return;
             }
 
-            ResetMemory();
-
             int mode = 1;
+            ResetMemory(mode);
             foreach (var (kb, b) in bridges)
             {
                 if (b.status == 1)
@@ -245,6 +247,19 @@ namespace STPnet
             {
                 b.SetNonRootPorts();
             }
+        }
+
+        public void Reset()
+        {
+            foreach(var (i,b) in bridges)
+            {
+                b.status = 0;
+                foreach(var (j,p) in b.ports)
+                {
+                    p.status = 0;
+                }
+            }
+            ResetMemory(0);
         }
 
 

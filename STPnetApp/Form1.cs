@@ -113,6 +113,36 @@ namespace STPnetApp
             Refresh();
         }
 
+        private void rootBridgeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            net.RootBridge();
+            Refresh();
+        }
+
+        private void rootPortsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            net.RootPorts();
+            Refresh();
+        }
+
+        private void desPortsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            net.NonRootPorts();
+            Refresh();
+        }
+
+        private void resetToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            net.Reset();
+            Refresh();
+        }
+
+        private void clearToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            net = new Net();
+            nw = new NetView();
+        }
+
         bool flagMove = false;
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -205,13 +235,22 @@ namespace STPnetApp
                         {
                             if (net.PortIsEmpty(idBridgeChoose1, idObjectChoose1))
                                 if (MessageBox.Show("Добавить связь?", "AddConnection", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                {
                                     net.AddConnect(idObjectChoose2, idBridgeChoose1, idObjectChoose1);
+                                    Point point = nw.bridges[idBridgeChoose1].ports[idObjectChoose1];
+                                    nw.AddConnectionLink(idObjectChoose2, idBridgeChoose1, point);
+                                }
                         }
                         else if (typeObjectChoose1 == 3 && typeObjectChoose2 == 2)
                         {
                             if (net.PortIsEmpty(idBridgeChoose2, idObjectChoose2))
                                 if (MessageBox.Show("Добавить связь?", "AddConnection", MessageBoxButtons.YesNo) == DialogResult.Yes)
+                                {
                                     net.AddConnect(idObjectChoose1, idBridgeChoose2, idObjectChoose2);
+                                    Point point = nw.bridges[idBridgeChoose2].ports[idObjectChoose2];
+                                    nw.AddConnectionLink(idObjectChoose1, idBridgeChoose2, point);
+                                }
+                                    
                         }
                         else
                         {
