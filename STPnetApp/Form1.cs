@@ -50,6 +50,9 @@ namespace STPnetApp
             net.DisconnectLink(idObjectChoose1, idBridgeChoose1, idPortChoose1);
             nw.DeleteConnectionLink(idObjectChoose1, idBridgeChoose1, idPortChoose1);
 
+            net.UpdateLinks();
+            nw.UpdateLinks();
+
             ClearStrip();
             Refresh();
         }
@@ -141,13 +144,14 @@ namespace STPnetApp
         {
             net = new Net();
             nw = new NetView();
+            Refresh();
         }
 
         bool flagMove = false;
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            net = new Net();
+            net = new Net(1);
             nw = new NetView();
         }
 

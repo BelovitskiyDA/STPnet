@@ -13,7 +13,13 @@ namespace STPnet
 
         private int maxLinkId;
 
-        public Net() 
+        public Net()
+        {
+            maxLinkId = 0;
+            links = new Dictionary<int, Link>();
+            bridges = new Dictionary<int, Bridge>();
+        }
+        public Net(int i) 
         {
             maxLinkId = 0;
             links = new Dictionary<int, Link>();

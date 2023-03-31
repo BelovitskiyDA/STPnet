@@ -230,7 +230,16 @@ namespace STPnetApp
             foreach(var (i,b) in net.bridges)
             {
                 PrintBridge(g, b);
-                foreach(var (j,p) in b.ports)
+            }
+
+            foreach (var (i, l) in net.links)
+            {
+                PrintLink(g, l);
+            }
+
+            foreach (var (i, b) in net.bridges)
+            {
+                foreach (var (j, p) in b.ports)
                 {
                     if (!bridges[i].ports.ContainsKey(j))
                     {
@@ -238,15 +247,10 @@ namespace STPnetApp
                         point.id = j;
                         point.x = 30;
                         point.y = 30;
-                        AddPort(i,j,point);
+                        AddPort(i, j, point);
                     }
-                    PrintPort(g,b.id, p);
+                    PrintPort(g, b.id, p);
                 }
-            }
-
-            foreach (var (i, l) in net.links)
-            {
-                PrintLink(g, l);
             }
         }
 
@@ -308,7 +312,7 @@ namespace STPnetApp
 
             string memory = (port.memory == Int32.MaxValue ? "inf" : port.memory.ToString());
             String drawString = $"{port.number} ({memory})";
-            Font drawFont = new Font("Arial", 8);
+            Font drawFont = new Font("Arial", 8, FontStyle.Bold);
             
 
             Point point = bridges[idBridge].ports[port.number];
@@ -321,7 +325,7 @@ namespace STPnetApp
 
         public void PrintLink(Graphics g, Link link)
         {
-            Pen pen = new Pen(Color.Gray, (int)(hLink/2));
+            Pen pen = new Pen(Color.FromArgb(190, 190, 190), (int)(hLink/2));
 
             if (!links.ContainsKey(link.id))
             {
