@@ -70,6 +70,7 @@ namespace STPnet
                         {
                             b2.ports[pn2].LinkId = -1;
                         }
+                        return;
                     }
                     else
                     {

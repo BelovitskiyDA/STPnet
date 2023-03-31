@@ -69,10 +69,16 @@ namespace STPnet
 
         public void AddBridge(int id, string priority)
         {
+            if (bridges.ContainsKey(id)) return;
             Bridge bridge = new Bridge(id, priority);
             bridges.Add(bridge.id, bridge);
         }
 
+        public void EditBridge(int id, string priority)
+        {
+            if (!bridges.ContainsKey(id)) return;
+            bridges[id].priority = Int32.Parse(priority, System.Globalization.NumberStyles.HexNumber);
+        }
         public void DeleteBridge(int idBridge)
         {
             if (!bridges.ContainsKey(idBridge)) return;
@@ -82,12 +88,14 @@ namespace STPnet
         public void AddPort(int idBridge, int number)
         {
             if (!bridges.ContainsKey(idBridge)) return;
+            if (bridges[idBridge].ports.ContainsKey(number)) return;
             bridges[idBridge].AddPort(number);
         }
 
         public void DeletePort(int idBridge, int number)
         {
             if (!bridges.ContainsKey(idBridge)) return;
+            if (!bridges[idBridge].ports.ContainsKey(number)) return;
             bridges[idBridge].DeletePort(number);
         }
 

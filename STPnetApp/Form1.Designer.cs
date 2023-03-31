@@ -37,9 +37,14 @@ namespace STPnetApp
             this.contextMenuStripLink = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.editLinkToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.contextMenuStripBridge = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.addPortToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editBridgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteBridgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.contextMenuStripLink.SuspendLayout();
+            this.contextMenuStripBridge.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -84,13 +89,13 @@ namespace STPnetApp
             this.editLinkToolStripMenuItem,
             this.deleteToolStripMenuItem});
             this.contextMenuStripLink.Name = "contextMenuStripLink";
-            this.contextMenuStripLink.Size = new System.Drawing.Size(255, 101);
+            this.contextMenuStripLink.Size = new System.Drawing.Size(255, 68);
             // 
             // editLinkToolStripMenuItem
             // 
             this.editLinkToolStripMenuItem.Name = "editLinkToolStripMenuItem";
             this.editLinkToolStripMenuItem.Size = new System.Drawing.Size(254, 32);
-            this.editLinkToolStripMenuItem.Text = "Редактриовать связь";
+            this.editLinkToolStripMenuItem.Text = "Редактировать связь";
             this.editLinkToolStripMenuItem.Click += new System.EventHandler(this.editLinkToolStripMenuItem_Click);
             // 
             // deleteToolStripMenuItem
@@ -98,6 +103,36 @@ namespace STPnetApp
             this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
             this.deleteToolStripMenuItem.Size = new System.Drawing.Size(254, 32);
             this.deleteToolStripMenuItem.Text = "Удалить связь";
+            this.deleteToolStripMenuItem.Click += new System.EventHandler(this.deleteToolStripMenuItem_Click);
+            // 
+            // contextMenuStripBridge
+            // 
+            this.contextMenuStripBridge.ImageScalingSize = new System.Drawing.Size(24, 24);
+            this.contextMenuStripBridge.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.addPortToolStripMenuItem,
+            this.editBridgeToolStripMenuItem,
+            this.deleteBridgeToolStripMenuItem});
+            this.contextMenuStripBridge.Name = "contextMenuStripBridge";
+            this.contextMenuStripBridge.Size = new System.Drawing.Size(250, 133);
+            // 
+            // addPortToolStripMenuItem
+            // 
+            this.addPortToolStripMenuItem.Name = "addPortToolStripMenuItem";
+            this.addPortToolStripMenuItem.Size = new System.Drawing.Size(249, 32);
+            this.addPortToolStripMenuItem.Text = "Добавить порт";
+            // 
+            // editBridgeToolStripMenuItem
+            // 
+            this.editBridgeToolStripMenuItem.Name = "editBridgeToolStripMenuItem";
+            this.editBridgeToolStripMenuItem.Size = new System.Drawing.Size(249, 32);
+            this.editBridgeToolStripMenuItem.Text = "Редактировать мост";
+            this.editBridgeToolStripMenuItem.Click += new System.EventHandler(this.editBridgeToolStripMenuItem_Click);
+            // 
+            // deleteBridgeToolStripMenuItem
+            // 
+            this.deleteBridgeToolStripMenuItem.Name = "deleteBridgeToolStripMenuItem";
+            this.deleteBridgeToolStripMenuItem.Size = new System.Drawing.Size(249, 32);
+            this.deleteBridgeToolStripMenuItem.Text = "Удалить мост";
             // 
             // FormMain
             // 
@@ -120,6 +155,7 @@ namespace STPnetApp
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.contextMenuStripLink.ResumeLayout(false);
+            this.contextMenuStripBridge.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -134,6 +170,10 @@ namespace STPnetApp
         private System.Windows.Forms.ContextMenuStrip contextMenuStripLink;
         private System.Windows.Forms.ToolStripMenuItem editLinkToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
+        private System.Windows.Forms.ContextMenuStrip contextMenuStripBridge;
+        private System.Windows.Forms.ToolStripMenuItem addPortToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem editBridgeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem deleteBridgeToolStripMenuItem;
     }
 }
 

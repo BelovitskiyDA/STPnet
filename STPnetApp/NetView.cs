@@ -298,6 +298,8 @@ namespace STPnetApp
                 var pair1 = link.connections.ElementAt(0);
                 var pair2 = link.connections.ElementAt(1);
 
+                if (pair1.Key.ports[pair1.Value].LinkId == -1 || pair2.Key.ports[pair2.Value].LinkId == -1) return;
+
                 Point p1 = bridges[pair1.Key.id].ports[pair1.Value];
                 p1.id = pair1.Value;
                 Point p2 = bridges[pair2.Key.id].ports[pair2.Value];
@@ -308,6 +310,7 @@ namespace STPnetApp
                 for (int i = 2; count > i; i++)
                 {
                     var pair = link.connections.ElementAt(i-1);
+                    if (pair.Key.ports[pair.Value].LinkId == -1) continue;
                     Point p = bridges[pair.Key.id].ports[pair.Value];
                     p.id = pair.Value;
                     AddConnectionLink(link.id, pair.Key.id, p);

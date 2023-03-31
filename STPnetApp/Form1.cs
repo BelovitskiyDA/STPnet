@@ -31,7 +31,7 @@ namespace STPnetApp
         private void editLinkToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int weight = net.links[idObjectChoose1].weight;
-            LinkDialog ld = new LinkDialog();
+            LinkDialog ld = new LinkDialog(weight);
             ld.ShowDialog();
             if (ld.DialogResult == DialogResult.OK)
             {
@@ -43,6 +43,35 @@ namespace STPnetApp
             }
             ClearStrip();
             Refresh();
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            net.DisconnectLink(idObjectChoose1, idBridgeChoose1, idPortChoose1);
+            nw.DeleteConnectionLink(idObjectChoose1, idBridgeChoose1, idPortChoose1);
+
+            ClearStrip();
+            Refresh();
+        }
+
+        private void editBridgeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            int idBridge = idObjectChoose1;
+            string priority = net.bridges[idBridge].priority.ToString("X");
+            BridgeDialog bd = new BridgeDialog(idBridge, priority);
+            bd.ShowDialog();
+            if (bd.DialogResult == DialogResult.OK)
+            {
+                priority = bd.priority;
+                if (String.IsNullOrWhiteSpace(priority))
+                {
+                    ClearStrip();
+                    return;
+                }
+                net.EditBridge(idBridge, priority);
+                ClearStrip();
+                Refresh();
+            }
         }
 
         bool flagMove = false;
@@ -121,7 +150,7 @@ namespace STPnetApp
                                 return;
                             }
                             int weight = 0;
-                            LinkDialog ld = new LinkDialog();
+                            LinkDialog ld = new LinkDialog(weight);
                             ld.ShowDialog();
                             if (ld.DialogResult == DialogResult.OK)
                             {
@@ -177,10 +206,30 @@ namespace STPnetApp
                 if (type == 0)
                 {
                     // bridgeDialog
+                    int idBridge = 0;
+                    string priority = "";
+                    BridgeDialog bd = new BridgeDialog(idBridge, priority);
+                    bd.ShowDialog();
+                    if (bd.DialogResult == DialogResult.OK)
+                    {
+                        idBridge = bd.id;
+                        priority = bd.priority;
+                        if (String.IsNullOrWhiteSpace(priority)) 
+                        {
+                            ClearStrip();
+                            return;
+                        }
+                        net.AddBridge(idBridge, priority);
+                        ClearStrip();
+                        Refresh();
+                        nw.EditPosBridge(idBridge, e.X, e.Y);
+                        Refresh();
+                    }
                 }
                 else if (type == 1)
                 {
                     // contextMenuBridge
+                    contextMenuStripBridge.Show(Cursor.Position);
                 }
                 else if (type == 3)
                 {
