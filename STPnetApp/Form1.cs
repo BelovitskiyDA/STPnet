@@ -168,6 +168,59 @@ namespace STPnetApp
             Refresh();
         }
 
+        private void FormMain_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            int d = 5; 
+            if (e.KeyChar == 97) //97 a Left
+            {
+                foreach(var (i,b) in nw.bridges)
+                {
+                    nw.EditPosBridge(i, b.x + d, b.y);
+                }
+                foreach (var (i, l) in nw.links)
+                {
+                    nw.EditPosLink(i, l.x + d, l.y);
+                }
+                Refresh();
+            }
+            else if (e.KeyChar == 100) //100 d Right
+            {
+                foreach (var (i, b) in nw.bridges)
+                {
+                    nw.EditPosBridge(i, b.x - d, b.y);
+                }
+                foreach (var (i, l) in nw.links)
+                {
+                    nw.EditPosLink(i, l.x - d, l.y);
+                }
+                Refresh();
+            }
+            else if (e.KeyChar == 119) //119 w Up
+            {
+                foreach (var (i, b) in nw.bridges)
+                {
+                    nw.EditPosBridge(i, b.x, b.y + d);
+                }
+                foreach (var (i, l) in nw.links)
+                {
+                    nw.EditPosLink(i, l.x, l.y + d);
+                }
+                Refresh();
+            }
+            else if (e.KeyChar == 115) //115 s Down
+            {
+                foreach (var (i, b) in nw.bridges)
+                {
+                    nw.EditPosBridge(i, b.x, b.y - d);
+                }
+                foreach (var (i, l) in nw.links)
+                {
+                    nw.EditPosLink(i, l.x, l.y - d);
+                }
+                Refresh();
+            }
+        }
+
         bool flagMove = false;
 
         private void FormMain_Load(object sender, EventArgs e)

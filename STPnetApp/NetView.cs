@@ -300,6 +300,18 @@ namespace STPnetApp
                 if (!net.links.ContainsKey(i))
                 {
                     DeleteLink(i);
+                    continue;
+                }
+                foreach (var (idb,p) in lps.ports)
+                {
+                    if (!net.links[i].connections.ContainsKey(net.bridges[idb]))
+                    {
+                        DeleteConnectionLink(i, idb, p.id);
+                    }
+                    /*if (!net.links[i].connections[net.bridges[idb]].))
+                    {
+                        DeleteConnectionLink(i, idb, p.id);
+                    }*/
                 }
             }
 

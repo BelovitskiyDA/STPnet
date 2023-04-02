@@ -70,7 +70,7 @@ namespace STPnetApp
             this.clearToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(959, 33);
+            this.menuStrip1.Size = new System.Drawing.Size(1178, 33);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -148,9 +148,9 @@ namespace STPnetApp
             this.statusStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 547);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 812);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(959, 32);
+            this.statusStrip1.Size = new System.Drawing.Size(1178, 32);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
@@ -244,14 +244,16 @@ namespace STPnetApp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(10F, 25F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScroll = true;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(959, 579);
+            this.ClientSize = new System.Drawing.Size(1178, 844);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FormMain";
             this.Text = "STPnet";
             this.Load += new System.EventHandler(this.FormMain_Load);
+            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseClick);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseMove);

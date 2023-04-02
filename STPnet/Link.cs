@@ -70,7 +70,11 @@ namespace STPnet
         public void Disconnect(Bridge bridge, int portNumber)
         {
             if (!connections.ContainsKey(bridge)) return;
-            if (connections[bridge] == portNumber) connections.Remove(bridge);
+            if (connections[bridge] == portNumber)
+            {
+                bridge.ports[portNumber].Link = null;
+                connections.Remove(bridge);
+            }
         }
         /*public void Update()
         {
