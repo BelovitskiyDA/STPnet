@@ -89,6 +89,22 @@ namespace STPnet
         public void DeleteBridge(int idBridge)
         {
             if (!bridges.ContainsKey(idBridge)) return;
+            foreach(var (np,p) in bridges[idBridge].ports)
+            {
+                if (p.Link != null)
+                {
+                    if (!p.Link.IsHub())
+                    {
+                        int idLink = p.Link.id;
+                        p.Link.Delete();
+                        links.Remove(idLink);
+                    }
+                    else
+                    {
+                        p.Link.Disconnect(bridges[idBridge], np);
+                    }
+                }
+            }
             bridges[idBridge].Delete();
             //bridges[idBridge] = null;
             bridges.Remove(idBridge);
@@ -104,6 +120,21 @@ namespace STPnet
         {
             if (!bridges.ContainsKey(idBridge)) return;
             if (!bridges[idBridge].ports.ContainsKey(number)) return;
+            
+            Port p = bridges[idBridge].ports[number];
+            if (p.Link != null)
+            {
+                if (!p.Link.IsHub())
+                {
+                    int idLink = p.Link.id;
+                    p.Link.Delete();
+                    links.Remove(idLink);
+                }
+                else
+                {
+                    p.Link.Disconnect(bridges[idBridge], p.number);
+                }
+            }
             bridges[idBridge].DeletePort(number);
         }
 
@@ -111,13 +142,13 @@ namespace STPnet
         {
             if (!bridges.ContainsKey(idBridge)) return false;
             if (!bridges[idBridge].ports.ContainsKey(number)) return false;
-            if (bridges[idBridge].ports[number].LinkId == -1) return true;
+            if (bridges[idBridge].ports[number].Link == null) return true;
             return false;
         }
         public void AddLink(int idBridge1, int portNumber1, int idBridge2, int portNumber2, int weight)
         {
             if (!bridges.ContainsKey(idBridge1) || !bridges.ContainsKey(idBridge2)) return;
-            if (bridges[idBridge1].ports[portNumber1].LinkId != -1 || bridges[idBridge2].ports[portNumber2].LinkId != -1) return;
+            if (bridges[idBridge1].ports[portNumber1].Link != null || bridges[idBridge2].ports[portNumber2].Link != null) return;
 
             Link link = new Link(++maxLinkId, bridges[idBridge1], portNumber1, bridges[idBridge2], portNumber2, weight);
             links.Add(link.id, link);
@@ -130,18 +161,21 @@ namespace STPnet
         public void DeleteLink(int idLink)
         {
             if (!links.ContainsKey(idLink)) return;
+            //links[idLink].Delete();
             links[idLink].Delete();
-            links[idLink] = null;
+            links.Remove(idLink);
+
+            //links[idLink] = null;
         }
 
         public void AddConnect(int idLink, int idBridge, int portNumber)
         {
             if (!links.ContainsKey(idLink)) return;
             if (!bridges.ContainsKey(idBridge)) return;
-            if (bridges[idBridge].ports[portNumber].LinkId != -1) return;
+            if (bridges[idBridge].ports[portNumber].Link != null) return; //isEmpty
             if (links[idLink].connections.ContainsKey(bridges[idBridge])) return;
             links[idLink].connections.Add(bridges[idBridge], portNumber);
-            bridges[idBridge].ports[portNumber].LinkId = links[idLink].id;
+            //bridges[idBridge].ports[portNumber].LinkId = links[idLink].id;
             bridges[idBridge].ports[portNumber].Link = links[idLink];
         }
 
@@ -149,10 +183,20 @@ namespace STPnet
         {
             if (!bridges.ContainsKey(idBridge)) return;
             if (!links.ContainsKey(idLink)) return;
-            links[idLink].Disconnect(bridges[idBridge], portNumber);
+            
+            if (!links[idLink].IsHub())
+            {
+                links[idLink].Delete();
+                links.Remove(idLink);
+            }
+            else
+            {
+                links[idLink].Disconnect(bridges[idBridge], portNumber);
+            }
+            
         }
 
-        public void UpdateLinks()
+        /*public void UpdateLinks()
         {
             foreach(var (i,l) in links)
             {
@@ -161,11 +205,11 @@ namespace STPnet
                 {
                     if (!bridges.ContainsKey(b.id)) continue;
                     if (!bridges[b.id].ports.ContainsKey(pn)) continue;
-                    if (b.ports[pn].LinkId != -1) flagDelete = false;
+                    if (b.ports[pn].Link != null) flagDelete = false;
                 }
                 if (flagDelete) links.Remove(i);
             }
-        }
+        }*/
         public void RootBridge()
         {
             if (links == null || bridges == null)

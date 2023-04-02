@@ -126,7 +126,6 @@ namespace STPnetApp
                 p.x = p.x + (x - oldx);
                 p.y = p.y + (y - oldy);
             }
-            //edit pos for ports
         }
         public void AddPort(int idBridge, int idPort, Point p)
         {
@@ -211,7 +210,7 @@ namespace STPnetApp
             links[id].y = y;
         }
 
-        public void UpdateLinks()
+        /*public void UpdateLinks()
         {
             foreach (var (i, ps) in links)
             {
@@ -223,18 +222,35 @@ namespace STPnetApp
                 }
                 if (flagDelete) links.Remove(i);
             }
-        }
+        }*/
 
-        public void Print(Graphics g, Net net)
+        public void Update(Net net)
         {
-            foreach(var (i,b) in net.bridges)
+            foreach (var (i, bps) in bridges)
             {
-                PrintBridge(g, b);
+                if (!net.bridges.ContainsKey(i))
+                {
+                    DeleteBridge(i);
+                }
             }
 
-            foreach (var (i, l) in net.links)
+            foreach (var (i, b) in net.bridges)
             {
-                PrintLink(g, l);
+                if (!bridges.ContainsKey(b.id))
+                {
+                    AddBridge(b.id, 400, 400);
+                }
+            }
+
+            foreach (var (idb, b) in bridges)
+            {
+                foreach (var (idp, p) in b.ports)
+                {
+                    if (!net.bridges[idb].ports.ContainsKey(p.id))
+                    {
+                        b.ports.Remove(idb);
+                    }
+                }
             }
 
             foreach (var (i, b) in net.bridges)
@@ -249,9 +265,77 @@ namespace STPnetApp
                         point.y = 30;
                         AddPort(i, j, point);
                     }
+                }
+            }
+
+            foreach (var (i, lps) in links)
+            {
+                if (!net.links.ContainsKey(i))
+                {
+                    DeleteLink(i);
+                }
+            }
+
+            foreach (var (idl, l) in net.links)
+            {
+                if (!links.ContainsKey(idl))
+                {
+                    var pair1 = l.connections.ElementAt(0);
+                    var pair2 = l.connections.ElementAt(1);
+
+                    if (pair1.Key.ports[pair1.Value].Link == null || pair2.Key.ports[pair2.Value].Link == null) return;
+
+                    Point p1 = bridges[pair1.Key.id].ports[pair1.Value];
+                    p1.id = pair1.Value;
+                    Point p2 = bridges[pair2.Key.id].ports[pair2.Value];
+                    p2.id = pair2.Value;
+                    AddLink(l.id, pair1.Key.id, p1, pair2.Key.id, p2);
+
+                    int count = l.connections.Count;
+                    for (int i = 2; count > i; i++)
+                    {
+                        var pair = l.connections.ElementAt(i - 1);
+                        if (pair.Key.ports[pair.Value].Link == null) continue;
+                        Point p = bridges[pair.Key.id].ports[pair.Value];
+                        p.id = pair.Value;
+                        AddConnectionLink(l.id, pair.Key.id, p);
+                    }
+                }
+
+                /*foreach (var (b, pn) in l.connections)
+                {
+                    if (!links[l.id].ports.ContainsKey(b.id))
+                    {
+                        Point p = bridges[b.id].ports[pn];
+                        AddConnectionLink(l.id, b.id, p);
+                    }
+                }*/
+            }
+
+        }
+
+        public void Print(Graphics g, Net net)
+        {
+            Update(net);
+
+            foreach (var (i, b) in net.bridges)
+            {
+                PrintBridge(g, b);
+            }
+
+            foreach (var (idl, l) in net.links)
+            {
+                PrintLink(g, l);
+            }
+
+            foreach (var (i, b) in net.bridges)
+            {
+                foreach (var (j, p) in b.ports)
+                {
                     PrintPort(g, b.id, p);
                 }
             }
+
         }
 
         public void PrintBridge(Graphics g, Bridge bridge)
@@ -267,20 +351,6 @@ namespace STPnetApp
 
             String drawString = $"{bridge.id} ({bridge.priority.ToString("X")})";
             Font drawFont = new Font("Arial", 20);
-            
-
-            if (!bridges.ContainsKey(bridge.id))
-            {
-                AddBridge(bridge.id, 400, 400);
-                foreach(var (i,p) in bridge.ports)
-                {
-                    Point point = new Point();
-                    point.id = p.number;
-                    point.x = 30;
-                    point.y = 30;
-                    AddPort(bridge.id, i, point);
-                }
-            }
 
             int bx = bridges[bridge.id].x;
             int by = bridges[bridge.id].y;
@@ -326,39 +396,6 @@ namespace STPnetApp
         public void PrintLink(Graphics g, Link link)
         {
             Pen pen = new Pen(Color.FromArgb(190, 190, 190), (int)(hLink/2));
-
-            if (!links.ContainsKey(link.id))
-            {
-                var pair1 = link.connections.ElementAt(0);
-                var pair2 = link.connections.ElementAt(1);
-
-                if (pair1.Key.ports[pair1.Value].LinkId == -1 || pair2.Key.ports[pair2.Value].LinkId == -1) return;
-
-                Point p1 = bridges[pair1.Key.id].ports[pair1.Value];
-                p1.id = pair1.Value;
-                Point p2 = bridges[pair2.Key.id].ports[pair2.Value];
-                p2.id = pair2.Value;
-                AddLink(link.id, pair1.Key.id, p1, pair2.Key.id, p2);
-
-                int count = link.connections.Count;
-                for (int i = 2; count > i; i++)
-                {
-                    var pair = link.connections.ElementAt(i-1);
-                    if (pair.Key.ports[pair.Value].LinkId == -1) continue;
-                    Point p = bridges[pair.Key.id].ports[pair.Value];
-                    p.id = pair.Value;
-                    AddConnectionLink(link.id, pair.Key.id, p);
-                }
-            }
-
-            foreach(var (b,pn) in link.connections)
-            {
-                if (!links[link.id].ports.ContainsKey(b.id))
-                {
-                    Point p = bridges[b.id].ports[pn];
-                    AddConnectionLink(link.id, b.id, p);
-                }
-            }
 
             int lx, ly;
             if (links[link.id].ports.Count == 2)

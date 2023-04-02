@@ -34,22 +34,34 @@ namespace STPnet
         public void DeletePort(int number)
         {
             if (!ports.ContainsKey(number)) return;
-            ports[number].LinkId = -1;
-            Link link = ports[number].Link;
-            link.Update();
+            //ports[number].LinkId = -1;
+            /*Link link = ports[number].Link;
+            if (!link.IsHub())
+            {
+                link.Delete();
+            }
+            else
+            {
+                link.Disconnect(this, number);
+            }*/
+            //link.Update();
             ports.Remove(number);
         }
 
         public void ClearPort(int number)
         {
             if (!ports.ContainsKey(number)) return;
-            ports[number].LinkId = -1;
-            ports[number].Link.Update();
+            /*ports[number].LinkId = -1;
+            ports[number].Link.Update();*/
+            Link link = ports[number].Link;
+            if (link.IsHub()) link = null;
+            else link.Disconnect(this, number);
         }
         public bool PortIsEmpty(int number)
         {
             if (!ports.ContainsKey(number)) return false;
-            if (ports[number].LinkId == -1) return true;
+            //if (ports[number].LinkId == -1) return true;
+            if (ports[number].Link == null) return true;
             return false;
         }
 
@@ -57,14 +69,14 @@ namespace STPnet
         {
             foreach (var (k, p) in ports)
             {
-                this.DeletePort(p.number);
+                DeletePort(p.number);
             }
         }
         public void FirstPocket(int mode)
         {
             foreach (var (k, p) in ports)
             {
-                if (p.LinkId != -1)
+                if (p.Link != null)
                 {
                     BPDU newPocket = new BPDU();
                     p.Link.Translate(id, p.number, newPocket, mode);
@@ -111,7 +123,7 @@ namespace STPnet
                             newPocket.Memory = pocket.Memory + weight;
                         }
 
-                        if (p.LinkId != -1)
+                        if (p.Link != null)
                         {
                             p.Link.Translate(id, p.number, newPocket, mode);
                         }
@@ -180,6 +192,7 @@ namespace STPnet
                 if (p.status != 0) continue;
                 if (rootMemory == p.memory)
                 {
+                    if (p.Link == null) continue;
                     if (p.Link.IsGreater(id,p.number))
                     {
                         p.status = 3;

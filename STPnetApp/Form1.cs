@@ -48,10 +48,10 @@ namespace STPnetApp
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
             net.DisconnectLink(idObjectChoose1, idBridgeChoose1, idPortChoose1);
-            nw.DeleteConnectionLink(idObjectChoose1, idBridgeChoose1, idPortChoose1);
+            //nw.DeleteConnectionLink(idObjectChoose1, idBridgeChoose1, idPortChoose1);
 
-            net.UpdateLinks();
-            nw.UpdateLinks();
+            //net.UpdateLinks();
+            //nw.UpdateLinks();
 
             ClearStrip();
             Refresh();
@@ -80,9 +80,9 @@ namespace STPnetApp
         private void deleteBridgeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             net.DeleteBridge(idObjectChoose1);
-            net.UpdateLinks();
-            nw.DeleteBridge(idObjectChoose1);
-            nw.UpdateLinks();
+            //net.UpdateLinks();
+            //nw.DeleteBridge(idObjectChoose1);
+            //nw.UpdateLinks();
 
             ClearStrip();
             Refresh();
@@ -108,9 +108,9 @@ namespace STPnetApp
         private void deletePortToolStripMenuItem_Click(object sender, EventArgs e)
         {
             net.DeletePort(idBridgeChoose1, idObjectChoose1);
-            net.UpdateLinks();
-            nw.DeletePort(idBridgeChoose1, idObjectChoose1);
-            nw.UpdateLinks();
+            //net.UpdateLinks();
+            //nw.DeletePort(idBridgeChoose1, idObjectChoose1);
+            //nw.UpdateLinks();
 
             ClearStrip();
             Refresh();

@@ -40,9 +40,9 @@ namespace STPnet
             /*this.OutBridge = OutBridge;
             this.outputPortNumber = outputPortNumber;*/
 
-            InBridge.ports[inputPortNumber].LinkId = this.id;
+            //InBridge.ports[inputPortNumber].LinkId = this.id;
             InBridge.ports[inputPortNumber].Link = this;
-            OutBridge.ports[outputPortNumber].LinkId = this.id;
+            //OutBridge.ports[outputPortNumber].LinkId = this.id;
             OutBridge.ports[outputPortNumber].Link = this;
 
             this.weight = weight;
@@ -58,10 +58,24 @@ namespace STPnet
             return true;
         }
 
-        public void Update()
+        public void Delete()
         {
             foreach (var (b, pn) in connections)
             {
+                b.ports[pn].Link = null;
+            }
+        }
+
+        public void Disconnect(Bridge bridge, int portNumber)
+        {
+            if (!connections.ContainsKey(bridge)) return;
+            if (connections[bridge] == portNumber) connections.Remove(bridge);
+        }
+        /*public void Update()
+        {
+            foreach (var (b, pn) in connections)
+            {
+                //if (b == null)
                 if (b.ports[pn].LinkId == -1)
                 {
                     if (connections.Count == 2)
@@ -78,21 +92,21 @@ namespace STPnet
                     }
                 }
             }
-        }
+        }*/
 
-        public void Delete()
+        /*public void Delete()
         {
             foreach (var (b, pn) in connections)
             {
                 b.ports[pn].LinkId = -1;       
             }
-        }
+        }*/
 
-        public void Disconnect(Bridge bridge, int portNumber)
+        /*public void Disconnect(Bridge bridge, int portNumber)
         {
             bridge.ports[portNumber].LinkId = -1;
             this.Update();
-        }
+        }*/
         public void Translate(int bridgeId, int portNumber, BPDU pocket, int mode)
         {
             /*if (bridgeId == InBridge.id && PortNumber == inputPortNumber)
