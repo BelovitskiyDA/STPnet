@@ -172,7 +172,7 @@ namespace STPnetApp
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            net = new Net(1);
+            net = new Net();
             nw = new NetView();
         }
 

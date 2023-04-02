@@ -97,16 +97,17 @@ namespace STPnet
                 return;
             }
 
+            int savePocketMemory = pocket.Memory;
             if (mode == 0)
             {
-                pocket.Memory += weight;
+                savePocketMemory += weight;
             }
 
-            if (pocket.Memory < ports[portNumber].memory)
+            if (savePocketMemory < ports[portNumber].memory)
             {
                 if (ports[portNumber].status == 0)
                 {
-                    ports[portNumber].memory = pocket.Memory;
+                    ports[portNumber].memory = savePocketMemory;
                 }
                 
                 foreach(var (k,p) in ports)
@@ -117,11 +118,11 @@ namespace STPnet
                         BPDU newPocket = new BPDU();
                         if (mode == 0)
                         {
-                            newPocket.Memory = pocket.Memory;
+                            newPocket.Memory = savePocketMemory;
                         }
                         else if (mode == 1)
                         {
-                            newPocket.Memory = pocket.Memory + weight;
+                            newPocket.Memory = savePocketMemory + weight;
                         }
 
                         if (p.Link != null)

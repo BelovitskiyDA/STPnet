@@ -23,7 +23,7 @@ namespace STPnet
             links = new Dictionary<int, Link>();
             bridges = new Dictionary<int, Bridge>();
         }
-        public Net(int i) 
+        /*public Net(int i) 
         {
             maxLinkId = 0;
             links = new Dictionary<int, Link>();
@@ -76,7 +76,7 @@ namespace STPnet
             links.Add(link6.id, link6);
 
             maxLinkId = 6;
-        }
+        }*/
 
         public void Save(string filename)
         {
