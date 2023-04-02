@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace STPnet
 {
+    [Serializable]
     public class Net
     {
         public Dictionary<int, Link> links;
@@ -72,6 +76,27 @@ namespace STPnet
             links.Add(link6.id, link6);
 
             maxLinkId = 6;
+        }
+
+        public void Save(string filename)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            using (FileStream fs = new FileStream(filename+"net", FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, this);
+            }
+        }
+
+        public Net Load(string filename)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            using (FileStream fs = new FileStream(filename+"net", FileMode.OpenOrCreate))
+            {
+                Net net = (Net)formatter.Deserialize(fs);
+                return net;
+            }
         }
 
         public void AddBridge(int id, string priority)

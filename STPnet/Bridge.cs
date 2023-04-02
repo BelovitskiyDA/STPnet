@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace STPnet
 {
+    [Serializable]
     public class Bridge
     {
         public int id;

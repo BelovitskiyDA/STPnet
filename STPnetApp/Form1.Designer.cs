@@ -31,7 +31,15 @@ namespace STPnetApp
         {
             this.components = new System.ComponentModel.Container();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stepsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rootBridgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.rootPortsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.desPortsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.contextMenuStripLink = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -43,11 +51,8 @@ namespace STPnetApp
             this.deleteBridgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStripPort = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.deletePortToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rootBridgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.rootPortsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.desPortsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.contextMenuStripLink.SuspendLayout();
@@ -59,6 +64,7 @@ namespace STPnetApp
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(24, 24);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.fileToolStripMenuItem,
             this.stepsToolStripMenuItem,
             this.resetToolStripMenuItem,
             this.clearToolStripMenuItem});
@@ -67,6 +73,29 @@ namespace STPnetApp
             this.menuStrip1.Size = new System.Drawing.Size(959, 33);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
+            // 
+            // fileToolStripMenuItem
+            // 
+            this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.saveToolStripMenuItem,
+            this.openToolStripMenuItem});
+            this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(69, 29);
+            this.fileToolStripMenuItem.Text = "Файл";
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(200, 34);
+            this.saveToolStripMenuItem.Text = "Сохранить";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // openToolStripMenuItem
+            // 
+            this.openToolStripMenuItem.Name = "openToolStripMenuItem";
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(200, 34);
+            this.openToolStripMenuItem.Text = "Открыть";
+            this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // stepsToolStripMenuItem
             // 
@@ -78,6 +107,41 @@ namespace STPnetApp
             this.stepsToolStripMenuItem.Size = new System.Drawing.Size(78, 29);
             this.stepsToolStripMenuItem.Text = "Этапы";
             this.stepsToolStripMenuItem.Click += new System.EventHandler(this.addBridgeToolStripMenuItem_Click_1);
+            // 
+            // rootBridgeToolStripMenuItem
+            // 
+            this.rootBridgeToolStripMenuItem.Name = "rootBridgeToolStripMenuItem";
+            this.rootBridgeToolStripMenuItem.Size = new System.Drawing.Size(208, 34);
+            this.rootBridgeToolStripMenuItem.Text = "Root Bridge";
+            this.rootBridgeToolStripMenuItem.Click += new System.EventHandler(this.rootBridgeToolStripMenuItem_Click);
+            // 
+            // rootPortsToolStripMenuItem
+            // 
+            this.rootPortsToolStripMenuItem.Name = "rootPortsToolStripMenuItem";
+            this.rootPortsToolStripMenuItem.Size = new System.Drawing.Size(208, 34);
+            this.rootPortsToolStripMenuItem.Text = "Root Ports";
+            this.rootPortsToolStripMenuItem.Click += new System.EventHandler(this.rootPortsToolStripMenuItem_Click);
+            // 
+            // desPortsToolStripMenuItem
+            // 
+            this.desPortsToolStripMenuItem.Name = "desPortsToolStripMenuItem";
+            this.desPortsToolStripMenuItem.Size = new System.Drawing.Size(208, 34);
+            this.desPortsToolStripMenuItem.Text = "Des Ports";
+            this.desPortsToolStripMenuItem.Click += new System.EventHandler(this.desPortsToolStripMenuItem_Click);
+            // 
+            // resetToolStripMenuItem
+            // 
+            this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
+            this.resetToolStripMenuItem.Size = new System.Drawing.Size(105, 29);
+            this.resetToolStripMenuItem.Text = "Сбросить";
+            this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
+            // 
+            // clearToolStripMenuItem
+            // 
+            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
+            this.clearToolStripMenuItem.Size = new System.Drawing.Size(103, 29);
+            this.clearToolStripMenuItem.Text = "Очистить";
+            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -165,40 +229,16 @@ namespace STPnetApp
             this.deletePortToolStripMenuItem.Text = "Удалить порт";
             this.deletePortToolStripMenuItem.Click += new System.EventHandler(this.deletePortToolStripMenuItem_Click);
             // 
-            // rootBridgeToolStripMenuItem
+            // saveFileDialog1
             // 
-            this.rootBridgeToolStripMenuItem.Name = "rootBridgeToolStripMenuItem";
-            this.rootBridgeToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.rootBridgeToolStripMenuItem.Text = "Root Bridge";
-            this.rootBridgeToolStripMenuItem.Click += new System.EventHandler(this.rootBridgeToolStripMenuItem_Click);
+            this.saveFileDialog1.DefaultExt = "astp";
+            this.saveFileDialog1.Filter = "Astp files (*.astp)|*.astp";
             // 
-            // rootPortsToolStripMenuItem
+            // openFileDialog1
             // 
-            this.rootPortsToolStripMenuItem.Name = "rootPortsToolStripMenuItem";
-            this.rootPortsToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.rootPortsToolStripMenuItem.Text = "Root Ports";
-            this.rootPortsToolStripMenuItem.Click += new System.EventHandler(this.rootPortsToolStripMenuItem_Click);
-            // 
-            // desPortsToolStripMenuItem
-            // 
-            this.desPortsToolStripMenuItem.Name = "desPortsToolStripMenuItem";
-            this.desPortsToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
-            this.desPortsToolStripMenuItem.Text = "Des Ports";
-            this.desPortsToolStripMenuItem.Click += new System.EventHandler(this.desPortsToolStripMenuItem_Click);
-            // 
-            // resetToolStripMenuItem
-            // 
-            this.resetToolStripMenuItem.Name = "resetToolStripMenuItem";
-            this.resetToolStripMenuItem.Size = new System.Drawing.Size(105, 29);
-            this.resetToolStripMenuItem.Text = "Сбросить";
-            this.resetToolStripMenuItem.Click += new System.EventHandler(this.resetToolStripMenuItem_Click);
-            // 
-            // clearToolStripMenuItem
-            // 
-            this.clearToolStripMenuItem.Name = "clearToolStripMenuItem";
-            this.clearToolStripMenuItem.Size = new System.Drawing.Size(103, 29);
-            this.clearToolStripMenuItem.Text = "Очистить";
-            this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            this.openFileDialog1.DefaultExt = "astp";
+            this.openFileDialog1.FileName = "openFileDialog1";
+            this.openFileDialog1.Filter = "Astp files (*.astp)|*.astp";
             // 
             // FormMain
             // 
@@ -248,6 +288,11 @@ namespace STPnetApp
         private System.Windows.Forms.ToolStripMenuItem desPortsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem resetToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }
 

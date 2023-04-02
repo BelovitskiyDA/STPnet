@@ -5,21 +5,27 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing;
 using STPnet;
+using System.Xml.Serialization;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 namespace STPnetApp
 {
+    [Serializable]
     public class PointStruct
     {
         public int x;
         public int y;
         public Dictionary<int, Point> ports;
     }
+    [Serializable]
     public class Point
     {
         public int id;
         public int x;
         public int y;
     }
+    [Serializable]
     public class NetView
     {
         public Dictionary<int, PointStruct> bridges;
@@ -32,6 +38,27 @@ namespace STPnetApp
         {
             bridges = new Dictionary<int, PointStruct>();
             links = new Dictionary<int, PointStruct>();
+        }
+
+        public void Save(string filename)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
+            {
+                formatter.Serialize(fs, this);
+            }
+        }
+
+        public NetView Load(string filename)
+        {
+            BinaryFormatter formatter = new BinaryFormatter();
+
+            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
+            {
+                NetView nw = (NetView)formatter.Deserialize(fs);
+                return nw;
+            }
         }
 
         public static int Funct(int x, double k, double b)

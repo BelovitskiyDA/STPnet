@@ -147,6 +147,27 @@ namespace STPnetApp
             Refresh();
         }
 
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == DialogResult.Cancel)
+                return;
+            string filename = saveFileDialog1.FileName;
+            net.Save(filename);
+            nw.Save(filename);
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
+                return;
+            string filename = openFileDialog1.FileName;
+            net = new Net();
+            nw = new NetView();
+            net = net.Load(filename);
+            nw = nw.Load(filename);
+            Refresh();
+        }
+
         bool flagMove = false;
 
         private void FormMain_Load(object sender, EventArgs e)
