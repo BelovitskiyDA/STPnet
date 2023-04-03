@@ -44,21 +44,17 @@ namespace STPnetApp
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
-            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
-            {
-                formatter.Serialize(fs, this);
-            }
+            using FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
+            formatter.Serialize(fs, this);
         }
 
-        public NetView Load(string filename)
+        public static NetView Load(string filename)
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
-            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
-            {
-                NetView nw = (NetView)formatter.Deserialize(fs);
-                return nw;
-            }
+            using FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
+            NetView nw = (NetView)formatter.Deserialize(fs);
+            return nw;
         }
 
         public static int Funct(int x, double k, double b)
@@ -275,7 +271,8 @@ namespace STPnetApp
                 {
                     if (!net.bridges[idb].ports.ContainsKey(p.id))
                     {
-                        b.ports.Remove(idb);
+                        DeletePort(idb, idp);
+                        //b.ports.Remove(idb);
                     }
                 }
             }

@@ -164,7 +164,7 @@ namespace STPnetApp
             net = new Net();
             nw = new NetView();
             net = net.Load(filename);
-            nw = nw.Load(filename);
+            nw = NetView.Load(filename);
             Refresh();
         }
 

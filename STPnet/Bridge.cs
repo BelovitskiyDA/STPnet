@@ -156,7 +156,7 @@ namespace STPnet
             {
                 if (minMemory == p.memory)
                 {
-                    if (numberPort < p.number)
+                    if (numberPort > p.number)
                     {
                         numberPort = p.number;
                     }
