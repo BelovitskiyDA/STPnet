@@ -37,6 +37,7 @@ namespace STPnetApp
             {
                 id = 0;
             }
+            if (id < 0) id = 0;
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)

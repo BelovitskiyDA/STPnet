@@ -23,7 +23,15 @@ namespace STPnet
         {
             ports = new Dictionary<int, Port>();
             this.id = id;
-            this.priority = Int32.Parse(priority, System.Globalization.NumberStyles.HexNumber);
+            try
+            {
+                this.priority = Int32.Parse(priority, System.Globalization.NumberStyles.HexNumber);
+            }
+            catch
+            {
+                this.priority = 0;
+            }
+            
             status = 0;
         }
         public void AddPort(int number)

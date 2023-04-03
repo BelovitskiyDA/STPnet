@@ -28,6 +28,7 @@ namespace STPnetApp
             {
                 number = 0;
             }
+            if (number < 0) number = 0;
         }
     }
 }

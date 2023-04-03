@@ -32,7 +32,9 @@ namespace STPnetApp
             catch
             {
                 weight = 0;
-            }   
+            }
+
+            if (weight < 0) weight = 0;
         }
     }
 }
