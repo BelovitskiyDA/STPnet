@@ -112,16 +112,20 @@ namespace STPnet
             bridge.ports[portNumber].LinkId = -1;
             this.Update();
         }*/
+        public void TranslateThread(int bridgeId, int portNumber, BPDU pocket, int mode)
+        {
+
+            if (!ConnectionExist(bridgeId, portNumber)) return;
+
+            foreach (var (b, pn) in connections)
+            {
+                if (b.id == bridgeId && pn == portNumber) continue;
+                b.HandlingPocketThread(pn, pocket, weight, mode);
+            }
+        }
+
         public void Translate(int bridgeId, int portNumber, BPDU pocket, int mode)
         {
-            /*if (bridgeId == InBridge.id && PortNumber == inputPortNumber)
-            {
-                OutBridge.HandlingPocket(outputPortNumber, pocket, weight, mode);
-            }
-            else if(bridgeId == OutBridge.id && PortNumber == outputPortNumber)
-            {
-                InBridge.HandlingPocket(inputPortNumber, pocket, weight, mode);
-            }*/
 
             if (!ConnectionExist(bridgeId, portNumber)) return;
 

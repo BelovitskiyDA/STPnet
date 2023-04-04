@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
@@ -267,6 +268,34 @@ namespace STPnet
             }
         }
 
+        public void NextStep()
+        {
+
+        }
+
+        public void RootPortsThread()
+        {
+            if (links == null || bridges == null)
+            {
+                Console.WriteLine("Add minimum one link and two bridges");
+                return;
+            }
+
+            int mode = 0;
+            foreach (var (kb, b) in bridges)
+            {
+                if (b.status == 1)
+                {
+                    Thread myThread = new Thread(() => b.FirstPocketThread(mode));
+                    myThread.Start();
+                    //await b.FirstPocketAsync(mode);
+                    break;
+                }
+            }
+
+            //SetRootPorts();
+        }
+
         public void RootPorts()
         {
             if (links == null || bridges == null)
@@ -285,6 +314,11 @@ namespace STPnet
                 }
             }
 
+            SetRootPorts();
+        }
+
+        public void SetRootPorts()
+        {
             foreach (var (kb, b) in bridges)
             {
                 b.SetRootPort();

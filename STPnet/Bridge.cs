@@ -81,6 +81,18 @@ namespace STPnet
                 DeletePort(p.number);
             }
         }
+
+        public void FirstPocketThread(int mode)
+        {
+            foreach (var (k, p) in ports)
+            {
+                if (p.Link != null)
+                {
+                    BPDU newPocket = new BPDU();
+                    p.Link.TranslateThread(id, p.number, newPocket, mode);
+                }
+            }
+        }
         public void FirstPocket(int mode)
         {
             foreach (var (k, p) in ports)
@@ -90,6 +102,64 @@ namespace STPnet
                     BPDU newPocket = new BPDU();
                     p.Link.Translate(id, p.number, newPocket, mode);
                 }
+            }
+        }
+
+        public void HandlingPocketThread(int portNumber, BPDU pocket, int weight, int mode)
+        {
+            // TODO: wait1event
+
+            if (!(ports.ContainsKey(portNumber)))
+            {
+                return;
+            }
+
+            if (status == 1)
+            {
+                return;
+            }
+
+            int savePocketMemory = pocket.Memory;
+            if (mode == 0)
+            {
+                savePocketMemory += weight;
+            }
+
+            if (savePocketMemory < ports[portNumber].memory)
+            {
+                if (ports[portNumber].status == 0)
+                {
+                    ports[portNumber].memory = savePocketMemory;
+                }
+
+                foreach (var (k, p) in ports)
+                {
+                    if (k == portNumber) continue;
+                    if (p.Link != null)
+                    {
+                        BPDU newPocket = new BPDU();
+                        if (mode == 0)
+                        {
+                            newPocket.Memory = savePocketMemory;
+                        }
+                        else if (mode == 1)
+                        {
+                            newPocket.Memory = savePocketMemory + weight;
+                        }
+
+                        if (p.Link != null)
+                        {
+                            // TODO: set2event
+                            p.Link.TranslateThread(id, p.number, newPocket, mode);
+                        }
+
+                    }
+                }
+
+            }
+            else
+            {
+                return;
             }
         }
 
