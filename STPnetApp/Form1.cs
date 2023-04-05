@@ -28,6 +28,7 @@ namespace STPnetApp
         int typeObjectChoose1, idObjectChoose1, idBridgeChoose1, idPortChoose1;
         int typeObjectChoose2, idObjectChoose2, idBridgeChoose2, idPortChoose2;
 
+        // modeling = false;
         private void editLinkToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int weight = net.links[idObjectChoose1].weight;
@@ -123,14 +124,38 @@ namespace STPnetApp
         }
 
         private void rootPortsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            net.RootPorts();
+        {            
+            if (stepByStepToolStripMenuItem.Checked)//checkBoxModeling.Checked
+            {
+                net.RootPorts(1);
+                for (int i = 0; i < 4; i++)
+                {
+                    menuStrip1.Items[i].Enabled = false;
+                }
+            }
+            else
+            {
+                net.RootPorts(0);
+            }
+
             Refresh();
         }
 
         private void desPortsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            net.NonRootPorts();
+            if (stepByStepToolStripMenuItem.Checked)//checkBoxModeling.Checked
+            {
+                net.NonRootPorts(1);
+                for (int i = 0; i < 4; i++)
+                {
+                    menuStrip1.Items[i].Enabled = false;
+                }
+            }
+            else
+            {
+                net.NonRootPorts(0);
+            }
+
             Refresh();
         }
 
@@ -165,6 +190,7 @@ namespace STPnetApp
             nw = new NetView();
             net = net.Load(filename);
             nw = NetView.Load(filename);
+            net.isCompleted = true;
             Refresh();
         }
 
@@ -219,6 +245,53 @@ namespace STPnetApp
                 }
                 Refresh();
             }
+            else if (e.KeyChar == 113) // q nextStep
+            {
+                net.NextStep();
+                if (net.isCompleted)
+                {
+                    for (int i = 0; i<4; i++)
+                    {
+                        menuStrip1.Items[i].Enabled = true;
+                    }
+                }
+                Refresh();
+            }
+            else if (e.KeyChar == 101) // e end
+            {
+                net.CompleteModeling();
+                if (net.isCompleted)
+                {
+                    for (int i = 0; i < 4; i++)
+                    {
+                        menuStrip1.Items[i].Enabled = true;
+                    }
+                }
+                Refresh();
+            }
+        }
+
+        private void stepByStepToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            //modeling = true;
+            if (!net.isCompleted) return;
+            if (stepByStepToolStripMenuItem.Checked) stepByStepToolStripMenuItem.Checked = false;
+            else stepByStepToolStripMenuItem.Checked = true;
+            //(ToolStripMenuItem)(menuStrip1.Items["stepByStepToolStripMenuItem"]).DropDownItems
+
+        }
+
+        private void completeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            net.CompleteModeling();
+            if (net.isCompleted)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    menuStrip1.Items[i].Enabled = true;
+                }
+            }
+            Refresh();
         }
 
         bool flagMove = false;
@@ -252,6 +325,7 @@ namespace STPnetApp
         }
         private void FormMain_MouseClick(object sender, MouseEventArgs e)
         {
+            if (!net.isCompleted) return;
             if (flagMove)
             {
                 ClearStrip();

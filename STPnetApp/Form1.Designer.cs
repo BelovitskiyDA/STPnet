@@ -40,6 +40,9 @@ namespace STPnetApp
             this.desPortsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.modelingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.stepByStepToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.completeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.contextMenuStripLink = new System.Windows.Forms.ContextMenuStrip(this.components);
@@ -67,7 +70,8 @@ namespace STPnetApp
             this.fileToolStripMenuItem,
             this.stepsToolStripMenuItem,
             this.resetToolStripMenuItem,
-            this.clearToolStripMenuItem});
+            this.clearToolStripMenuItem,
+            this.modelingToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1178, 33);
@@ -142,6 +146,29 @@ namespace STPnetApp
             this.clearToolStripMenuItem.Size = new System.Drawing.Size(103, 29);
             this.clearToolStripMenuItem.Text = "Очистить";
             this.clearToolStripMenuItem.Click += new System.EventHandler(this.clearToolStripMenuItem_Click);
+            // 
+            // modelingToolStripMenuItem
+            // 
+            this.modelingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.stepByStepToolStripMenuItem,
+            this.completeToolStripMenuItem});
+            this.modelingToolStripMenuItem.Name = "modelingToolStripMenuItem";
+            this.modelingToolStripMenuItem.Size = new System.Drawing.Size(163, 29);
+            this.modelingToolStripMenuItem.Text = "Моделирование";
+            // 
+            // stepByStepToolStripMenuItem
+            // 
+            this.stepByStepToolStripMenuItem.Name = "stepByStepToolStripMenuItem";
+            this.stepByStepToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.stepByStepToolStripMenuItem.Text = "По шагам";
+            this.stepByStepToolStripMenuItem.Click += new System.EventHandler(this.stepByStepToolStripMenuItem_Click);
+            // 
+            // completeToolStripMenuItem
+            // 
+            this.completeToolStripMenuItem.Name = "completeToolStripMenuItem";
+            this.completeToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.completeToolStripMenuItem.Text = "Завершить";
+            this.completeToolStripMenuItem.Click += new System.EventHandler(this.completeToolStripMenuItem_Click);
             // 
             // statusStrip1
             // 
@@ -249,6 +276,7 @@ namespace STPnetApp
             this.ClientSize = new System.Drawing.Size(1178, 844);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.menuStrip1);
+            this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FormMain";
             this.Text = "STPnet";
@@ -295,6 +323,9 @@ namespace STPnetApp
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.SaveFileDialog saveFileDialog1;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.ToolStripMenuItem modelingToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem stepByStepToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem completeToolStripMenuItem;
     }
 }
 

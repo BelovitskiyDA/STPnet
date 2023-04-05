@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace STPnet
@@ -16,7 +17,7 @@ namespace STPnet
         public Bridge OutBridge;
         public int outputPortNumber;*/
         public int weight;
-
+        //LinkedList<int> linksList;
         public Link() 
         {
             connections = new Dictionary<Bridge, int>();
@@ -112,7 +113,7 @@ namespace STPnet
             bridge.ports[portNumber].LinkId = -1;
             this.Update();
         }*/
-        public void TranslateThread(int bridgeId, int portNumber, BPDU pocket, int mode)
+        /*public void TranslateThread(int bridgeId, int portNumber, BPDU pocket, int mode)
         {
 
             if (!ConnectionExist(bridgeId, portNumber)) return;
@@ -122,7 +123,7 @@ namespace STPnet
                 if (b.id == bridgeId && pn == portNumber) continue;
                 b.HandlingPocketThread(pn, pocket, weight, mode);
             }
-        }
+        }*/
 
         public void Translate(int bridgeId, int portNumber, BPDU pocket, int mode)
         {
@@ -130,10 +131,19 @@ namespace STPnet
             if (!ConnectionExist(bridgeId, portNumber)) return;
 
             foreach(var (b,pn) in connections)
-            {
+            {                
                 if (b.id == bridgeId && pn == portNumber) continue;
+                //int oldStatus = b.ports[pn].statusPrint;
+                if (b.ports[pn].statusPrint < 1) b.ports[pn].statusPrint = 1;
+                b.ports[pn].statusPrint++;
                 b.HandlingPocket(pn, pocket, weight, mode);
+                b.ports[pn].statusPrint--;
+                if (b.ports[pn].statusPrint == 1) b.ports[pn].statusPrint = 0;
+
+                /*EventWaitHandle waitHandler1 = EventWaitHandle.OpenExisting("ev1");
+                waitHandler1.Set();*/
             }
+            return;
         }
 
         public bool ConnectionExist(int bridgeId, int portNumber)

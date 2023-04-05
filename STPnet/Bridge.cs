@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace STPnet
@@ -13,6 +14,12 @@ namespace STPnet
         public int priority;
         public int status; // 0 without, 1 root,
         public Dictionary<int,Port> ports;
+        [NonSerialized]
+        public EventWaitHandle ev1;
+        [NonSerialized]
+        public EventWaitHandle ev2;
+        [NonSerialized]
+        public EventWaitHandle ev3;
 
         public Bridge() 
         {
@@ -82,7 +89,7 @@ namespace STPnet
             }
         }
 
-        public void FirstPocketThread(int mode)
+        /*public void FirstPocketThread(int mode)
         {
             foreach (var (k, p) in ports)
             {
@@ -92,7 +99,7 @@ namespace STPnet
                     p.Link.TranslateThread(id, p.number, newPocket, mode);
                 }
             }
-        }
+        }*/
         public void FirstPocket(int mode)
         {
             foreach (var (k, p) in ports)
@@ -103,11 +110,13 @@ namespace STPnet
                     p.Link.Translate(id, p.number, newPocket, mode);
                 }
             }
+            ev2 = EventWaitHandle.OpenExisting("ev2");
+            ev2.Set();
+            return;
         }
 
-        public void HandlingPocketThread(int portNumber, BPDU pocket, int weight, int mode)
-        {
-            // TODO: wait1event
+        /*public void HandlingPocketThread(int portNumber, BPDU pocket, int weight, int mode)
+        {   
 
             if (!(ports.ContainsKey(portNumber)))
             {
@@ -149,7 +158,7 @@ namespace STPnet
 
                         if (p.Link != null)
                         {
-                            // TODO: set2event
+                            
                             p.Link.TranslateThread(id, p.number, newPocket, mode);
                         }
 
@@ -161,16 +170,15 @@ namespace STPnet
             {
                 return;
             }
-        }
+        }*/
 
         public void HandlingPocket(int portNumber, BPDU pocket, int weight, int mode)
         {
-            if (!(ports.ContainsKey(portNumber)))
-            {
-                return;
-            }
+            ev1 = EventWaitHandle.OpenExisting("ev1");
+            ev3 = EventWaitHandle.OpenExisting("ev3");
+            WaitHandle[] waitHandles = new WaitHandle[] { ev1, ev3 };
 
-            if (status == 1)
+            if (!(ports.ContainsKey(portNumber)))
             {
                 return;
             }
@@ -181,16 +189,55 @@ namespace STPnet
                 savePocketMemory += weight;
             }
 
+            int saveProgMemory = ports[portNumber].progMemory;
+            ports[portNumber].progMemory = savePocketMemory;
+
+            if (status == 1)
+            {
+                //ports[portNumber].progMemory = savePocketMemory;
+                ports[portNumber].prevMemory = ports[portNumber].memory;
+                ports[portNumber].memory = savePocketMemory;
+
+                int oldStatus = ports[portNumber].statusPrint;
+                ports[portNumber].statusPrint = 1;
+                //ev1.WaitOne();
+                EventWaitHandle.WaitAny(waitHandles);
+                ports[portNumber].statusPrint = oldStatus;
+
+                return;
+            }
+
+            
+
             if (savePocketMemory < ports[portNumber].memory)
             {
                 if (ports[portNumber].status == 0)
                 {
+                    ports[portNumber].prevMemory = ports[portNumber].memory;
                     ports[portNumber].memory = savePocketMemory;
                 }
-                
-                foreach(var (k,p) in ports)
+                /*if (ports[portNumber].status == 0)
                 {
-                    if (k == portNumber) continue;
+
+                }*/
+
+
+                    foreach (var (k,p) in ports)
+                { 
+                    if (k == portNumber)
+                    {
+                        if (ports.Count == 1)
+                        {
+                            int oldStatus = ports[portNumber].statusPrint;
+                            ports[portNumber].statusPrint = 1;
+                            //ev1.WaitOne();
+                            EventWaitHandle.WaitAny(waitHandles);
+                            //ev1.WaitOne();
+                            ports[portNumber].statusPrint = oldStatus;
+                        }
+                        continue;
+                    }
+
                     if (p.Link != null)
                     {
                         BPDU newPocket = new BPDU();
@@ -205,8 +252,18 @@ namespace STPnet
 
                         if (p.Link != null)
                         {
+                            
+                            int oldStatus = ports[portNumber].statusPrint;
+                            ports[portNumber].statusPrint = 1;
+                            EventWaitHandle.WaitAny(waitHandles);
+                            //ev1.WaitOne();
+                            //ev1.WaitOne();
+                            ports[portNumber].statusPrint = oldStatus;
+
                             p.Link.Translate(id, p.number, newPocket, mode);
+                            
                         }
+                        
                         
                     }
                 }
@@ -214,6 +271,17 @@ namespace STPnet
             }
             else
             {
+                //ports[portNumber].prevMemory = savePocketMemory;
+                //ports[portNumber].progMemory = savePocketMemory;
+                
+
+                int oldStatus = ports[portNumber].statusPrint;
+                ports[portNumber].statusPrint = 1;
+                //ev1.WaitOne();
+                EventWaitHandle.WaitAny(waitHandles);
+                //ev1.WaitOne();
+                ports[portNumber].progMemory = saveProgMemory;
+                ports[portNumber].statusPrint = oldStatus;
                 return;
             }
         }
@@ -241,6 +309,13 @@ namespace STPnet
             if (numberPort != Int32.MaxValue)
             {
                 ports[numberPort].status = 1;
+            }
+
+            foreach (var (k, p) in ports)
+            {
+                p.statusPrint = 0;
+                p.prevMemory = 0;
+                p.progMemory = 0;
             }
         }
 
@@ -291,6 +366,13 @@ namespace STPnet
                     p.status = 3; //blocked
                 }
             }
+
+            foreach (var (k, p) in ports)
+            {
+                p.statusPrint = 0;
+                p.prevMemory = 0;
+                p.progMemory = 0;
+            }
         }
 
         public void ResetMemory(int mode)
@@ -299,6 +381,10 @@ namespace STPnet
             {
                 if (mode == 1 && p.status != 0) continue;
                 p.memory = Int32.MaxValue;
+
+                /*p.statusPrint = 0;
+                p.prevMemory = 0;
+                p.progMemory = 0;*/
             }
         }
     }

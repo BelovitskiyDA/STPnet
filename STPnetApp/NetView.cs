@@ -8,6 +8,7 @@ using STPnet;
 using System.Xml.Serialization;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Drawing.Drawing2D;
 
 namespace STPnetApp
 {
@@ -30,9 +31,9 @@ namespace STPnetApp
     {
         public Dictionary<int, PointStruct> bridges;
         public Dictionary<int, PointStruct> links;
-        public int hBridge = 200; // need %2
-        public int hPort = 50; // need %2
-        public int hLink = 10; // need %2
+        public static int hBridge = 200; // need %2
+        public static int hPort = 50; // need %2
+        public static int hLink = 10; // need %2
 
         public NetView()
         {
@@ -358,8 +359,10 @@ namespace STPnetApp
 
             foreach (var (idl, l) in net.links)
             {
-                PrintLink(g, l);
+                PrintLink(g, net, l);
             }
+            //PrintLinkLists(g, net);
+
 
             foreach (var (i, b) in net.bridges)
             {
@@ -413,6 +416,17 @@ namespace STPnetApp
                 drawBrush = new SolidBrush(Color.Red);
             }
 
+            if (port.statusPrint == 1)
+            {
+                pen = new Pen(Color.Orange, penWeight);
+                drawBrush = new SolidBrush(Color.Orange);
+            }
+            else if (port.statusPrint > 1)
+            {
+                pen = new Pen(Color.FromArgb(181, 0, 181), penWeight);
+                drawBrush = new SolidBrush(Color.FromArgb(181, 0, 181));
+            }
+
             string memory = (port.memory == Int32.MaxValue ? "inf" : port.memory.ToString());
             String drawString = $"{port.number} ({memory})";
             Font drawFont = new Font("Arial", 8, FontStyle.Bold);
@@ -423,29 +437,132 @@ namespace STPnetApp
             int py = point.y;
             Rectangle rect = new Rectangle(px - hPort/2, py - hPort/2, hPort, hPort);
             g.DrawRectangle(pen, rect);
-            g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
+
+
+            //g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
+            if (port.statusPrint == 1)
+            {
+                if (port.memory <= port.progMemory)
+                {
+                    string progMemory = (port.progMemory == Int32.MaxValue ? "inf" : port.progMemory.ToString());
+                    String drawString2 = $"{progMemory}";
+                    g.DrawString(drawString2, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
+
+                    drawBrush = new SolidBrush(Color.Green);
+                    g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py);
+                }
+                else if (port.memory<port.prevMemory)
+                {
+                    drawBrush = new SolidBrush(Color.Green);
+                    g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
+                    
+                    drawBrush = new SolidBrush(Color.Red);
+                    string prevMemory = (port.prevMemory == Int32.MaxValue ? "inf" : port.prevMemory.ToString());
+                    String drawString2 = $"{prevMemory}";
+                    g.DrawString(drawString2, drawFont, drawBrush, px - hPort / 2, py);
+                }
+                else
+                {
+                    g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
+                }
+            }
+            else
+            {
+                g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
+            }
         }
 
-        public void PrintLink(Graphics g, Link link)
+        public static void LinkEnding(int xl, int yl, ref int xp, ref int yp)
         {
+            double k = 0;
+            double deltax = (xl - xp);
+            double deltay = (yl - yp);
+            if (deltax == 0)
+            {
+                //deltax = 0.0001;
+                k = 99999;
+            }
+            else if (deltay == 0)
+            {
+                //deltay = 0.0001;
+                k = 0.00001;
+            }
+            else
+            {
+                k = deltay / deltax;
+            }
+            
+
+            
+
+            if (Math.Abs(k) <= 1)
+            {
+                xp = (int)(xp + Math.Sign(deltax) * hPort / 2);
+                yp = (int)(yp + Math.Sign(deltay) * Math.Abs(k) * hPort / 2);
+            }
+            else
+            {
+                xp = (int)Math.Round(xp + Math.Sign(deltax) * Math.Abs(1/k) * hPort / 2);
+                yp = (int)(yp + Math.Sign(deltay) * hPort / 2);
+            }
+        }
+
+        public void PrintLink(Graphics g, Net net, Link link)
+        {
+
             Pen pen = new Pen(Color.FromArgb(190, 190, 190), (int)(hLink/2));
 
             int lx, ly;
             if (links[link.id].ports.Count == 2)
             {    
-                var l1 = links[link.id].ports.ElementAt(0).Value;
-                var l2 = links[link.id].ports.ElementAt(1).Value;
-                lx = links[link.id].x = (int)((l1.x + l2.x) / 2);
-                ly = links[link.id].y = (int)((l1.y + l2.y) / 2);
-                g.DrawLine(pen, l1.x, l1.y, l2.x, l2.y);
+                var ps1 = links[link.id].ports.ElementAt(0);
+                var p1 = ps1.Value;
+                var ps2 = links[link.id].ports.ElementAt(1);
+                var p2 = ps2.Value;
+                lx = links[link.id].x = (int)((p1.x + p2.x) / 2);
+                ly = links[link.id].y = (int)((p1.y + p2.y) / 2);
+
+                Pen penCopy = (Pen)pen.Clone();
+                if (net.bridges[ps1.Key].ports[p1.id].statusPrint > 0)
+                {
+                    penCopy.CustomStartCap = new AdjustableArrowCap(4, 7);
+                }
+                if (net.bridges[ps2.Key].ports[p2.id].statusPrint > 0)
+                {
+                    penCopy.CustomEndCap = new AdjustableArrowCap(4, 7);
+                }
+
+                int p1x = p1.x;
+                int p1y = p1.y;
+                int p2x = p2.x;
+                int p2y = p2.y;
+
+                LinkEnding(lx, ly, ref p1x, ref p1y);
+                LinkEnding(lx, ly, ref p2x, ref p2y);
+
+                g.DrawLine(penCopy, p1x, p1y, p2x, p2y);
+
             }
             else
             {
                 lx = links[link.id].x;
                 ly = links[link.id].y;
+                //Pen penCopy = pen;
                 foreach (var (i, p) in links[link.id].ports)
                 {
-                    g.DrawLine(pen, lx, ly, p.x, p.y);
+                    Pen penCopy = (Pen)pen.Clone();
+                    if (net.bridges[i].ports[p.id].statusPrint > 0)
+                    {
+                        penCopy.CustomEndCap = new AdjustableArrowCap(4, 7);
+                    }
+
+                    int px = p.x;
+                    int py = p.y;
+
+                    LinkEnding(lx, ly, ref px, ref py);
+
+                    g.DrawLine(penCopy, lx, ly, px, py);
+
                 }
 
                 Rectangle rect = new Rectangle(lx - hLink / 2, ly - hLink / 2, hLink, hLink);
@@ -457,5 +574,10 @@ namespace STPnetApp
             SolidBrush drawBrush = new SolidBrush(Color.Black);
             g.DrawString(drawString, drawFont, drawBrush, lx, ly);
         }
+
+        /*public void PrintLinkLists(Graphics g, Net net)
+        {
+
+        }*/
     }
 }
