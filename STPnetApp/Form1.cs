@@ -119,12 +119,15 @@ namespace STPnetApp
 
         private void rootBridgeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            net.Reset();
             net.RootBridge();
             Refresh();
         }
 
         private void rootPortsToolStripMenuItem_Click(object sender, EventArgs e)
-        {            
+        {
+            net.Reset();
+            net.RootBridge();
             if (stepByStepToolStripMenuItem.Checked)//checkBoxModeling.Checked
             {
                 net.RootPorts(1);
@@ -136,6 +139,7 @@ namespace STPnetApp
             else
             {
                 net.RootPorts(0);
+                net.waitComplete();
             }
 
             Refresh();
@@ -143,6 +147,10 @@ namespace STPnetApp
 
         private void desPortsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            net.Reset();
+            net.RootBridge();
+            net.RootPorts(0);
+            net.waitComplete();
             if (stepByStepToolStripMenuItem.Checked)//checkBoxModeling.Checked
             {
                 net.NonRootPorts(1);
@@ -154,6 +162,8 @@ namespace STPnetApp
             else
             {
                 net.NonRootPorts(0);
+                net.waitComplete();
+
             }
 
             Refresh();

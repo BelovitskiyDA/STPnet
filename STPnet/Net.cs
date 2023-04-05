@@ -373,15 +373,17 @@ namespace STPnet
                 {
                     if (threadMode == 0)
                     {
-                        ev1 = new EventWaitHandle(true, EventResetMode.ManualReset, "ev1");
+                        ev1 = new EventWaitHandle(true, EventResetMode.AutoReset, "ev1");
+                        ev3 = new EventWaitHandle(true, EventResetMode.ManualReset, "ev3");
                     }
                     else
                     {
                         ev1 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev1"); ev1.Reset();
+                        ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3"); ev3.Reset();
                     }
 
-                    ev2 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev2");
-                    ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3"); ev3.Reset();
+                    ev2 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev2"); ev2.Reset();
+                    // = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3"); ev3.Reset();
                     //ev4 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev4");
 
                     myThread = new Thread(() => b.FirstPocket(mode));
@@ -444,15 +446,17 @@ namespace STPnet
                 {
                     if (threadMode == 0)
                     {
-                        ev1 = new EventWaitHandle(true, EventResetMode.ManualReset, "ev1");
+                        ev1 = new EventWaitHandle(true, EventResetMode.AutoReset, "ev1");
+                        ev3 = new EventWaitHandle(true, EventResetMode.ManualReset, "ev3");
                     }
                     else
                     {
                         ev1 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev1"); ev1.Reset();
+                        ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3"); ev3.Reset();
                     }
 
-                    ev2 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev2"); 
-                    ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3"); ev3.Reset();
+                    ev2 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev2"); ev2.Reset();
+                    //ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3"); ev3.Reset();
                     //ev4 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev4");
 
                     myThread = new Thread(() => b.FirstPocket(mode));

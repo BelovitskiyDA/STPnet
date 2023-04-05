@@ -112,6 +112,7 @@ namespace STPnet
             }
             ev2 = EventWaitHandle.OpenExisting("ev2");
             ev2.Set();
+            ev2.Dispose();
             return;
         }
 
@@ -174,9 +175,7 @@ namespace STPnet
 
         public void HandlingPocket(int portNumber, BPDU pocket, int weight, int mode)
         {
-            ev1 = EventWaitHandle.OpenExisting("ev1");
-            ev3 = EventWaitHandle.OpenExisting("ev3");
-            WaitHandle[] waitHandles = new WaitHandle[] { ev1, ev3 };
+            
 
             if (!(ports.ContainsKey(portNumber)))
             {
@@ -192,6 +191,10 @@ namespace STPnet
             int saveProgMemory = ports[portNumber].progMemory;
             ports[portNumber].progMemory = savePocketMemory;
 
+            ev1 = EventWaitHandle.OpenExisting("ev1");
+            ev3 = EventWaitHandle.OpenExisting("ev3");
+            WaitHandle[] waitHandles = new WaitHandle[] { ev1, ev3 };
+
             if (status == 1)
             {
                 //ports[portNumber].progMemory = savePocketMemory;
@@ -204,6 +207,8 @@ namespace STPnet
                 EventWaitHandle.WaitAny(waitHandles);
                 ports[portNumber].statusPrint = oldStatus;
 
+                ev1.Dispose();
+                ev3.Dispose();
                 return;
             }
 
@@ -222,7 +227,7 @@ namespace STPnet
                 }*/
 
 
-                    foreach (var (k,p) in ports)
+                foreach (var (k,p) in ports)
                 { 
                     if (k == portNumber)
                     {
@@ -282,6 +287,9 @@ namespace STPnet
                 //ev1.WaitOne();
                 ports[portNumber].progMemory = saveProgMemory;
                 ports[portNumber].statusPrint = oldStatus;
+
+                ev1.Dispose();
+                ev3.Dispose();
                 return;
             }
         }
