@@ -159,14 +159,14 @@ namespace STPnetApp
             // stepByStepToolStripMenuItem
             // 
             this.stepByStepToolStripMenuItem.Name = "stepByStepToolStripMenuItem";
-            this.stepByStepToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.stepByStepToolStripMenuItem.Size = new System.Drawing.Size(203, 34);
             this.stepByStepToolStripMenuItem.Text = "По шагам";
             this.stepByStepToolStripMenuItem.Click += new System.EventHandler(this.stepByStepToolStripMenuItem_Click);
             // 
             // completeToolStripMenuItem
             // 
             this.completeToolStripMenuItem.Name = "completeToolStripMenuItem";
-            this.completeToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.completeToolStripMenuItem.Size = new System.Drawing.Size(203, 34);
             this.completeToolStripMenuItem.Text = "Завершить";
             this.completeToolStripMenuItem.Click += new System.EventHandler(this.completeToolStripMenuItem_Click);
             // 
@@ -280,6 +280,7 @@ namespace STPnetApp
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "FormMain";
             this.Text = "STPnet";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.FormMain_KeyPress);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseClick);

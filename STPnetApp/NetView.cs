@@ -442,7 +442,18 @@ namespace STPnetApp
             //g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
             if (port.statusPrint == 1)
             {
-                if (port.memory <= port.progMemory)
+                if (port.status == 1)
+                { 
+                    drawBrush = new SolidBrush(Color.Green);
+                    g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
+
+                    if (port.memory > port.progMemory) drawBrush = new SolidBrush(Color.Black);
+                    else drawBrush = new SolidBrush(Color.Red);
+                    string progMemory = (port.progMemory == Int32.MaxValue ? "inf" : port.progMemory.ToString());
+                    String drawString2 = $"{progMemory}";
+                    g.DrawString(drawString2, drawFont, drawBrush, px - hPort / 2, py);
+                }
+                else if (port.memory < port.progMemory)
                 {
                     string progMemory = (port.progMemory == Int32.MaxValue ? "inf" : port.progMemory.ToString());
                     String drawString2 = $"{progMemory}";
@@ -451,11 +462,11 @@ namespace STPnetApp
                     drawBrush = new SolidBrush(Color.Green);
                     g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py);
                 }
-                else if (port.memory<port.prevMemory)
+                else if (port.memory < port.prevMemory)
                 {
                     drawBrush = new SolidBrush(Color.Green);
                     g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
-                    
+
                     drawBrush = new SolidBrush(Color.Red);
                     string prevMemory = (port.prevMemory == Int32.MaxValue ? "inf" : port.prevMemory.ToString());
                     String drawString2 = $"{prevMemory}";

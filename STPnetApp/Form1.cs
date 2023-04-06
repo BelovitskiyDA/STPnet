@@ -304,6 +304,11 @@ namespace STPnetApp
             Refresh();
         }
 
+        private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            net.CompleteModeling();
+        }
+
         bool flagMove = false;
 
         private void FormMain_Load(object sender, EventArgs e)

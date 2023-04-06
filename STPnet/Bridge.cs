@@ -198,8 +198,11 @@ namespace STPnet
             if (status == 1)
             {
                 //ports[portNumber].progMemory = savePocketMemory;
-                ports[portNumber].prevMemory = ports[portNumber].memory;
-                ports[portNumber].memory = savePocketMemory;
+                if (savePocketMemory < ports[portNumber].memory)
+                {
+                    ports[portNumber].prevMemory = ports[portNumber].memory;
+                    ports[portNumber].memory = savePocketMemory;
+                }
 
                 int oldStatus = ports[portNumber].statusPrint;
                 ports[portNumber].statusPrint = 1;
