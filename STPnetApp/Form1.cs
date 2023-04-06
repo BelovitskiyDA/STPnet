@@ -496,16 +496,37 @@ namespace STPnetApp
             idObjectMove = id;
             idBridgeMove = idb;
             idPortMove = idp;
+            if (typeObjectMove == 0)
+            {
+                Cursor.Current = Cursors.SizeAll;
+                prevPosition.X = e.X;
+                prevPosition.Y = e.Y;
+            }
         }
 
+        System.Drawing.Point prevPosition;
         private void FormMain_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
             {
                 flagMove = true;
-                Debug.WriteLine(typeObjectMove.ToString());
-                if (typeObjectMove == 0) return;
-                if (typeObjectMove == 1)
+                //Debug.WriteLine(typeObjectMove.ToString());
+                if (typeObjectMove == 0)
+                {
+
+                    foreach (var (i, b) in nw.bridges)
+                    {
+                        nw.EditPosBridge(i, b.x + e.X - prevPosition.X, b.y + e.Y - prevPosition.Y);
+                    }
+                    foreach (var (i, l) in nw.links)
+                    {
+                        nw.EditPosLink(i, l.x + e.X - prevPosition.X, l.y + e.Y - prevPosition.Y);
+                    }
+                    Refresh();
+                    prevPosition.X = e.X;
+                    prevPosition.Y = e.Y;
+                }
+                else if (typeObjectMove == 1)
                 {
                     nw.EditPosBridge(idObjectMove, e.X, e.Y);
                 }
@@ -527,6 +548,7 @@ namespace STPnetApp
             idObjectMove = 0;
             idBridgeMove = 0;
             idPortMove = 0;
+            Cursor.Current = Cursors.Default;
         }
     }
 }
