@@ -196,11 +196,10 @@ namespace STPnetApp
             if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
                 return;
             string filename = openFileDialog1.FileName;
-            net = new Net();
-            nw = new NetView();
-            net = net.Load(filename);
+            //net = new Net();
+            //nw = new NetView();
+            net = Net.Load(filename);
             nw = NetView.Load(filename);
-            net.isCompleted = true;
             Refresh();
         }
 

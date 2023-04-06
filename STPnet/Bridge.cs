@@ -15,11 +15,7 @@ namespace STPnet
         public int status; // 0 without, 1 root,
         public Dictionary<int,Port> ports;
         [NonSerialized]
-        public EventWaitHandle ev1;
-        [NonSerialized]
-        public EventWaitHandle ev2;
-        [NonSerialized]
-        public EventWaitHandle ev3;
+        public EventWaitHandle ev1, ev2, ev3;
 
         public Bridge() 
         {
@@ -50,17 +46,6 @@ namespace STPnet
         public void DeletePort(int number)
         {
             if (!ports.ContainsKey(number)) return;
-            //ports[number].LinkId = -1;
-            /*Link link = ports[number].Link;
-            if (!link.IsHub())
-            {
-                link.Delete();
-            }
-            else
-            {
-                link.Disconnect(this, number);
-            }*/
-            //link.Update();
             ports.Remove(number);
         }
 
@@ -89,17 +74,6 @@ namespace STPnet
             }
         }
 
-        /*public void FirstPocketThread(int mode)
-        {
-            foreach (var (k, p) in ports)
-            {
-                if (p.Link != null)
-                {
-                    BPDU newPocket = new BPDU();
-                    p.Link.TranslateThread(id, p.number, newPocket, mode);
-                }
-            }
-        }*/
         public void FirstPocket(int mode)
         {
             foreach (var (k, p) in ports)
@@ -115,63 +89,6 @@ namespace STPnet
             ev2.Dispose();
             return;
         }
-
-        /*public void HandlingPocketThread(int portNumber, BPDU pocket, int weight, int mode)
-        {   
-
-            if (!(ports.ContainsKey(portNumber)))
-            {
-                return;
-            }
-
-            if (status == 1)
-            {
-                return;
-            }
-
-            int savePocketMemory = pocket.Memory;
-            if (mode == 0)
-            {
-                savePocketMemory += weight;
-            }
-
-            if (savePocketMemory < ports[portNumber].memory)
-            {
-                if (ports[portNumber].status == 0)
-                {
-                    ports[portNumber].memory = savePocketMemory;
-                }
-
-                foreach (var (k, p) in ports)
-                {
-                    if (k == portNumber) continue;
-                    if (p.Link != null)
-                    {
-                        BPDU newPocket = new BPDU();
-                        if (mode == 0)
-                        {
-                            newPocket.Memory = savePocketMemory;
-                        }
-                        else if (mode == 1)
-                        {
-                            newPocket.Memory = savePocketMemory + weight;
-                        }
-
-                        if (p.Link != null)
-                        {
-                            
-                            p.Link.TranslateThread(id, p.number, newPocket, mode);
-                        }
-
-                    }
-                }
-
-            }
-            else
-            {
-                return;
-            }
-        }*/
 
         public void HandlingPocket(int portNumber, BPDU pocket, int weight, int mode)
         {

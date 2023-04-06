@@ -32,6 +32,10 @@ namespace STPnet
             links = new Dictionary<int, Link>();
             bridges = new Dictionary<int, Bridge>();
             isCompleted = true;
+
+            ev1 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev1");
+            ev2 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev2");
+            ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3");
         }
         /*public Net(int i) 
         {
@@ -98,13 +102,17 @@ namespace STPnet
             }
         }
 
-        public Net Load(string filename)
+        public static Net Load(string filename)
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
             using (FileStream fs = new FileStream(filename+"net", FileMode.OpenOrCreate))
             {
                 Net net = (Net)formatter.Deserialize(fs);
+                net.isCompleted = true;
+                net.ev1 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev1");
+                net.ev2 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev2");
+                net.ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3");
                 return net;
             }
         }
@@ -231,20 +239,6 @@ namespace STPnet
             
         }
 
-        /*public void UpdateLinks()
-        {
-            foreach(var (i,l) in links)
-            {
-                bool flagDelete = true;
-                foreach (var (b,pn) in l.connections)
-                {
-                    if (!bridges.ContainsKey(b.id)) continue;
-                    if (!bridges[b.id].ports.ContainsKey(pn)) continue;
-                    if (b.ports[pn].Link != null) flagDelete = false;
-                }
-                if (flagDelete) links.Remove(i);
-            }
-        }*/
         public void RootBridge()
         {
             if (links == null || bridges == null)
@@ -285,51 +279,11 @@ namespace STPnet
             //ev2.WaitOne();
             //SetRootPorts();
         }
-
-        /*public void RootPortsThread(int threadMode)
-        {
-            if (links == null || bridges == null)
-            {
-                Console.WriteLine("Add minimum one link and two bridges");
-                return;
-            }
-
-            int mode = 0;
-            foreach (var (kb, b) in bridges)
-            {
-                if (b.status == 1)
-                {
-                    if (threadMode == 1)
-                    {
-                        ev1 = new EventWaitHandle(true, EventResetMode.ManualReset, "ev1");
-                    }
-                    else
-                    {
-                        ev1 = new EventWaitHandle(true, EventResetMode.AutoReset, "ev1");
-                    }
-                    Thread myThread = new Thread(() => b.FirstPocketThread(mode));
-                    myThread.Start();
-                    //await b.FirstPocketAsync(mode);
-                    break;
-                }
-            }
-
-            //SetRootPorts();
-        }*/
+        
+        
 
         public void CheckEnd(int flag)
         {
-            /*ev2.WaitOne();
-            myThread.Join();
-            CheckThread.Join();
-            if (links == null || bridges == null)
-            {
-                myThread = null;
-                CheckThread = null;
-            }
-            SetRootPorts();
-            isCompleted = true;
-            ev4.Set();*/
             myThread.Join();
             if (flag == 0)
             {
@@ -342,12 +296,12 @@ namespace STPnet
             isCompleted = true;
             myThread = null;
             CheckThread = null;
-            ev1.Dispose();
+            /*ev1.Dispose();
             ev1 = null;
             ev2.Dispose();
             ev2 = null;
             ev3.Dispose();
-            ev3 = null;
+            ev3 = null;*/
             //ev3.Reset();
             return;
         }
@@ -357,6 +311,32 @@ namespace STPnet
             CheckThread.Join();
             
         }
+
+        void StartModeling(int mode, int threadMode, Bridge b)
+        {
+            if (threadMode == 0)
+            {
+                ev1.Set();
+                ev3.Set();
+            }
+            else
+            {
+                ev1.Reset();
+                ev3.Reset();
+            }
+
+            ev2.Reset();
+
+            isCompleted = false;
+
+            myThread = new Thread(() => b.FirstPocket(mode));
+            myThread.Start();
+
+            CheckThread = new Thread(() => CheckEnd(mode));
+            CheckThread.Start();
+            return;
+        }
+
 
         public void RootPorts(int threadMode)
         {
@@ -371,37 +351,10 @@ namespace STPnet
             {
                 if (b.status == 1)
                 {
-                    if (threadMode == 0)
-                    {
-                        ev1 = new EventWaitHandle(true, EventResetMode.AutoReset, "ev1");
-                        ev3 = new EventWaitHandle(true, EventResetMode.ManualReset, "ev3");
-                    }
-                    else
-                    {
-                        ev1 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev1"); ev1.Reset();
-                        ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3"); ev3.Reset();
-                    }
-
-                    ev2 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev2"); ev2.Reset();
-                    // = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3"); ev3.Reset();
-                    //ev4 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev4");
-
-                    myThread = new Thread(() => b.FirstPocket(mode));
-                    myThread.Start();
-
-                    CheckThread = new Thread(() => CheckEnd(0));
-                    CheckThread.Start();
-
-                    isCompleted = false;
-                    //b.FirstPocket(mode);
+                    StartModeling(mode, threadMode, b);
                     break;
                 }
             }
-
-            /*if (threadMode == 0)
-            {
-                SetRootPorts();
-            }*/
         }
 
         public void SetRootPorts()
@@ -444,38 +397,10 @@ namespace STPnet
             {
                 if (b.status == 1)
                 {
-                    if (threadMode == 0)
-                    {
-                        ev1 = new EventWaitHandle(true, EventResetMode.AutoReset, "ev1");
-                        ev3 = new EventWaitHandle(true, EventResetMode.ManualReset, "ev3");
-                    }
-                    else
-                    {
-                        ev1 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev1"); ev1.Reset();
-                        ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3"); ev3.Reset();
-                    }
-
-                    ev2 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev2"); ev2.Reset();
-                    //ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3"); ev3.Reset();
-                    //ev4 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev4");
-
-                    myThread = new Thread(() => b.FirstPocket(mode));
-                    myThread.Start();
-
-                    CheckThread = new Thread(() => CheckEnd(1));
-                    CheckThread.Start();
-
-                    isCompleted = false;
-
-                    //b.FirstPocket(mode);
+                    StartModeling(mode, threadMode, b);
                     break;
                 }
             }
-
-            /*foreach (var (kb, b) in bridges)
-            {
-                b.SetNonRootPorts();
-            }*/
         }
 
         public void CompleteModeling()
