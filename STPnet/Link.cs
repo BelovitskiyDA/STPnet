@@ -125,24 +125,64 @@ namespace STPnet
             }
         }*/
 
-        public void Translate(int bridgeId, int portNumber, BPDU pocket, int mode)
+        public void Translate(Bridge bridge, int portNumber, BPDU pocket, int mode)
         {
+            //int oldStatusPrint = bridge.ports[portNumber].statusPrint;
+            //bridge.ports[portNumber].statusPrint = 2;
+            if (!ConnectionExist(bridge.id, portNumber)) return;
 
-            if (!ConnectionExist(bridgeId, portNumber)) return;
 
-            foreach(var (b,pn) in connections)
-            {                
-                if (b.id == bridgeId && pn == portNumber) continue;
-                //int oldStatus = b.ports[pn].statusPrint;
-                if (b.ports[pn].statusPrint < 1) b.ports[pn].statusPrint = 1;
-                b.ports[pn].statusPrint++;
-                b.HandlingPocket(pn, pocket, weight, mode);
-                b.ports[pn].statusPrint--;
-                if (b.ports[pn].statusPrint == 1) b.ports[pn].statusPrint = 0;
-
-                /*EventWaitHandle waitHandler1 = EventWaitHandle.OpenExisting("ev1");
-                waitHandler1.Set();*/
+            //bridge.ports[portNumber].statusPrint = 0;
+            Dictionary<int, int> memoryStatusPrint = new Dictionary<int, int>();
+            foreach (var (pnn, p) in bridge.ports)
+            {
+                if (p.statusPrint != 0)
+                {
+                    memoryStatusPrint.Add(pnn, p.statusPrint);
+                    p.statusPrint = 0;
+                }
             }
+
+            foreach (var (b,pn) in connections)
+            {                
+                if (b.id == bridge.id && pn == portNumber) continue;
+
+                //if (b.ports[pn].statusPrint < 1) b.ports[pn].statusPrint = 1;
+                //b.ports[pn].statusPrint++;
+
+                
+
+                
+
+                b.ports[pn].statusPrint = 1;
+                b.ports[pn].statusArrow++;
+
+                b.HandlingPocket(pn, pocket, weight, mode);
+
+                b.ports[pn].statusPrint = 0;
+                b.ports[pn].statusArrow--;
+
+                
+
+                
+                //b.ports[pn].statusPrint--;
+                //if (b.ports[pn].statusPrint == 1) b.ports[pn].statusPrint = 0;
+
+            }
+            bridge.ports[portNumber].statusPrint = 2;
+
+            foreach (var (pnn, msp) in memoryStatusPrint)
+            {
+                bridge.ports[pnn].statusPrint = msp;
+            }
+
+            foreach (var (b, pn) in connections)
+            {
+                if (b.id == bridge.id && pn == portNumber) continue;
+                b.ports[pn].statusPrint = 0;
+            }
+            /*bridge.ports[portNumber].statusArrow = 0;*/
+
             return;
         }
 

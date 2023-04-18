@@ -81,9 +81,12 @@ namespace STPnet
                 if (p.Link != null)
                 {
                     BPDU newPocket = new BPDU();
-                    p.Link.Translate(id, p.number, newPocket, mode);
+                    p.Link.Translate(this, p.number, newPocket, mode);
+                    p.statusPrint = 0;
                 }
             }
+
+
             ev2 = EventWaitHandle.OpenExisting("ev2");
             ev2.Set();
             ev2.Dispose();
@@ -121,11 +124,12 @@ namespace STPnet
                     ports[portNumber].memory = savePocketMemory;
                 }
 
-                int oldStatus = ports[portNumber].statusPrint;
-                ports[portNumber].statusPrint = 1;
+                //int oldStatus = ports[portNumber].statusPrint;
+                //ports[portNumber].statusPrint = 1;
                 //ev1.WaitOne();
                 EventWaitHandle.WaitAny(waitHandles);
-                ports[portNumber].statusPrint = oldStatus;
+                
+                //ports[portNumber].statusPrint = oldStatus;
 
                 ev1.Dispose();
                 ev3.Dispose();
@@ -153,12 +157,13 @@ namespace STPnet
                     {
                         if (ports.Count == 1)
                         {
-                            int oldStatus = ports[portNumber].statusPrint;
-                            ports[portNumber].statusPrint = 1;
+                            //int oldStatus = ports[portNumber].statusPrint;
+                            //ports[portNumber].statusPrint = 1;
                             //ev1.WaitOne();
                             EventWaitHandle.WaitAny(waitHandles);
+                            return;
                             //ev1.WaitOne();
-                            ports[portNumber].statusPrint = oldStatus;
+                            //ports[portNumber].statusPrint = oldStatus;
                         }
                         continue;
                     }
@@ -178,21 +183,26 @@ namespace STPnet
                         if (p.Link != null)
                         {
                             
-                            int oldStatus = ports[portNumber].statusPrint;
-                            ports[portNumber].statusPrint = 1;
+                            //int oldStatus = ports[portNumber].statusPrint;
+                            //ports[portNumber].statusPrint = 1;
+                            
                             EventWaitHandle.WaitAny(waitHandles);
                             //ev1.WaitOne();
                             //ev1.WaitOne();
-                            ports[portNumber].statusPrint = oldStatus;
+                            //ports[portNumber].statusPrint = oldStatus;
 
-                            p.Link.Translate(id, p.number, newPocket, mode);
+                            p.Link.Translate(this, p.number, newPocket, mode);
                             
                         }
                         
                         
                     }
                 }
-
+                EventWaitHandle.WaitAny(waitHandles);
+                foreach (var (pnn, p) in ports)
+                {
+                    p.statusPrint = 0;
+                }
             }
             else
             {
@@ -200,13 +210,13 @@ namespace STPnet
                 //ports[portNumber].progMemory = savePocketMemory;
                 
 
-                int oldStatus = ports[portNumber].statusPrint;
-                ports[portNumber].statusPrint = 1;
+                //int oldStatus = ports[portNumber].statusPrint;
+                //ports[portNumber].statusPrint = 1;
                 //ev1.WaitOne();
                 EventWaitHandle.WaitAny(waitHandles);
                 //ev1.WaitOne();
                 ports[portNumber].progMemory = saveProgMemory;
-                ports[portNumber].statusPrint = oldStatus;
+                //ports[portNumber].statusPrint = oldStatus;
 
                 ev1.Dispose();
                 ev3.Dispose();
@@ -242,6 +252,7 @@ namespace STPnet
             foreach (var (k, p) in ports)
             {
                 p.statusPrint = 0;
+                p.statusArrow = 0;
                 p.prevMemory = 0;
                 p.progMemory = 0;
             }

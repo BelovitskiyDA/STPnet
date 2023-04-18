@@ -437,6 +437,7 @@ namespace STPnet
                 {
                     p.status = 0;
                     p.statusPrint = 0;
+                    p.statusArrow = 0;
                     p.prevMemory = 0;
                     p.progMemory = 0;
                 }

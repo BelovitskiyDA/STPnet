@@ -234,20 +234,6 @@ namespace STPnetApp
             links[id].y = y;
         }
 
-        /*public void UpdateLinks()
-        {
-            foreach (var (i, ps) in links)
-            {
-                bool flagDelete = true;
-                foreach (var (idb,point) in ps.ports)
-                {
-                    if (!bridges.ContainsKey(idb)) continue;
-                    if (!bridges[idb].ports.ContainsKey(point.id)) continue;
-                }
-                if (flagDelete) links.Remove(i);
-            }
-        }*/
-
         public void Update(Net net)
         {
             foreach (var (i, bps) in bridges)
@@ -421,12 +407,15 @@ namespace STPnetApp
                 pen = new Pen(Color.Orange, penWeight);
                 drawBrush = new SolidBrush(Color.Orange);
             }
-            else if (port.statusPrint > 1)
+            else if (port.statusPrint == 2)
             {
                 pen = new Pen(Color.FromArgb(181, 0, 181), penWeight);
                 drawBrush = new SolidBrush(Color.FromArgb(181, 0, 181));
             }
+            /*else if (port.statusPrint == 2)
+            {
 
+            }*/
             string memory = (port.memory == Int32.MaxValue ? "inf" : port.memory.ToString());
             String drawString = $"{port.number} ({memory})";
             Font drawFont = new Font("Arial", 8, FontStyle.Bold);
@@ -485,7 +474,7 @@ namespace STPnetApp
 
         public static void LinkEnding(int xl, int yl, ref int xp, ref int yp)
         {
-            double k = 0;
+            double k;
             double deltax = (xl - xp);
             double deltay = (yl - yp);
             if (deltax == 0)
@@ -534,11 +523,11 @@ namespace STPnetApp
                 ly = links[link.id].y = (int)((p1.y + p2.y) / 2);
 
                 Pen penCopy = (Pen)pen.Clone();
-                if (net.bridges[ps1.Key].ports[p1.id].statusPrint > 0)
+                if (net.bridges[ps1.Key].ports[p1.id].statusArrow > 0)
                 {
                     penCopy.CustomStartCap = new AdjustableArrowCap(4, 7);
                 }
-                if (net.bridges[ps2.Key].ports[p2.id].statusPrint > 0)
+                if (net.bridges[ps2.Key].ports[p2.id].statusArrow > 0)
                 {
                     penCopy.CustomEndCap = new AdjustableArrowCap(4, 7);
                 }
@@ -562,10 +551,14 @@ namespace STPnetApp
                 foreach (var (i, p) in links[link.id].ports)
                 {
                     Pen penCopy = (Pen)pen.Clone();
-                    if (net.bridges[i].ports[p.id].statusPrint > 0)
+                    if (net.bridges[i].ports[p.id].statusArrow > 0)
                     {
                         penCopy.CustomEndCap = new AdjustableArrowCap(4, 7);
                     }
+                    /*if (net.bridges[i].ports[p.id].statusPrint > 0)
+                    {
+                        penCopy.CustomEndCap = new AdjustableArrowCap(4, 7);
+                    }*/
 
                     int px = p.x;
                     int py = p.y;

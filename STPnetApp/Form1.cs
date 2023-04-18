@@ -513,7 +513,6 @@ namespace STPnetApp
                 //Debug.WriteLine(typeObjectMove.ToString());
                 if (typeObjectMove == 0)
                 {
-
                     foreach (var (i, b) in nw.bridges)
                     {
                         nw.EditPosBridge(i, b.x + e.X - prevPosition.X, b.y + e.Y - prevPosition.Y);

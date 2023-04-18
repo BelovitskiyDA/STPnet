@@ -15,6 +15,7 @@ namespace STPnet
         public int memory;
         public int prevMemory;
         public int progMemory;
+        public int statusArrow;
         //public int LinkId;
         /*private Link link;
         public ref Link Link
@@ -30,10 +31,11 @@ namespace STPnet
             this.number = number;
             status = 0;
             statusPrint = 0;
+            statusArrow = 0;
             memory = Int32.MaxValue;
             Link = null;
             prevMemory = 0;
-            prevMemory = 0;
+            progMemory = 0;
         //LinkId = -1;
     }
 
