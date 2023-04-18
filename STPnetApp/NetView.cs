@@ -32,7 +32,7 @@ namespace STPnetApp
         public Dictionary<int, PointStruct> bridges;
         public Dictionary<int, PointStruct> links;
         public static int hBridge = 200; // need %2
-        public static int hPort = 50; // need %2
+        public static int hPort = 60; // need %2
         public static int hLink = 10; // need %2
 
         public NetView()
@@ -354,7 +354,7 @@ namespace STPnetApp
             {
                 foreach (var (j, p) in b.ports)
                 {
-                    PrintPort(g, b.id, p);
+                    PrintPort(g, b.id, p, !net.isCompleted);
                 }
             }
 
@@ -372,16 +372,17 @@ namespace STPnetApp
             }
 
             String drawString = $"{bridge.id} ({bridge.priority.ToString("X")})";
-            Font drawFont = new Font("Arial", 20);
+            Font drawFont = new Font("Arial", 14);
 
             int bx = bridges[bridge.id].x;
             int by = bridges[bridge.id].y;
             Rectangle rect = new Rectangle(bx - hBridge/2, by - hBridge/2, hBridge, hBridge);
             g.DrawRectangle(pen, rect);
-            g.DrawString(drawString, drawFont, drawBrush, bx - (int)(hBridge / 4), by - (int)(hBridge / 4));
+            var stringSize = g.MeasureString(drawString, drawFont);
+            g.DrawString(drawString, drawFont, drawBrush, bx - (int)(stringSize.Width / 2), by - (int)(stringSize.Height / 2));
         }
 
-        public void PrintPort(Graphics g, int idBridge, Port port)
+        public void PrintPort(Graphics g, int idBridge, Port port, bool modeling)
         {
             int penWeight = 3;
             Pen pen = new Pen(Color.Black, penWeight);
@@ -416,31 +417,21 @@ namespace STPnetApp
             {
 
             }*/
-            string memory = (port.memory == Int32.MaxValue ? "inf" : port.memory.ToString());
-            String drawString = $"{port.number} ({memory})";
-            Font drawFont = new Font("Arial", 8, FontStyle.Bold);
-            
 
             Point point = bridges[idBridge].ports[port.number];
             int px = point.x;
             int py = point.y;
-            Rectangle rect = new Rectangle(px - hPort/2, py - hPort/2, hPort, hPort);
+            Rectangle rect = new Rectangle(px - hPort / 2, py - hPort / 2, hPort, hPort);
             g.DrawRectangle(pen, rect);
 
 
             //g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
-            if (port.statusPrint == 1)
+            /*if (port.statusPrint == 1)
             {
                 if (port.status == 1)
                 { 
                     drawBrush = new SolidBrush(Color.Green);
-                    g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
-
-                    if (port.memory > port.progMemory) drawBrush = new SolidBrush(Color.Black);
-                    else drawBrush = new SolidBrush(Color.Red);
-                    string progMemory = (port.progMemory == Int32.MaxValue ? "inf" : port.progMemory.ToString());
-                    String drawString2 = $"{progMemory}";
-                    g.DrawString(drawString2, drawFont, drawBrush, px - hPort / 2, py);
+                    
                 }
                 else if (port.memory < port.progMemory)
                 {
@@ -469,6 +460,59 @@ namespace STPnetApp
             else
             {
                 g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
+            }*/
+            string memory = (port.memory == Int32.MaxValue ? "inf" : port.memory.ToString());
+            String drawNumber = $"{port.number}";
+            String drawMemory = $"{memory}";
+            Font drawFont = new Font("Arial", 8, FontStyle.Bold);
+
+            g.DrawString(drawNumber, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
+
+            var stringSize = g.MeasureString(drawMemory, drawFont);
+            if (modeling)
+            {
+                g.DrawString(drawMemory, drawFont, drawBrush, px + hPort / 2 - stringSize.Width, py - hPort / 2);
+            }
+            else
+            {
+                g.DrawString(drawMemory, drawFont, drawBrush, px - (int)(stringSize.Width/2), py - (int)(stringSize.Height/2));
+            }
+                
+
+            /*if (port.memory > port.progMemory) drawBrush = new SolidBrush(Color.Black);
+            else drawBrush = new SolidBrush(Color.Red);*/
+
+            if (modeling)
+            {
+
+                string progMemory = (port.progMemory == Int32.MaxValue ? "inf" : port.progMemory.ToString());
+                String drawProgMemory = $"{progMemory}";
+                var stringSize2 = g.MeasureString(drawProgMemory, drawFont);
+
+
+                if (port.statusPrint == 1 && port.status != 1)
+                {
+                    var drawBrush1 = new SolidBrush(Color.Green);
+                    if (port.progMemory > port.memory)
+                        drawBrush1 = new SolidBrush(Color.Red);
+
+                    g.DrawString(drawProgMemory, drawFont, drawBrush1, px + hPort / 2 - stringSize2.Width, py - hPort / 2 + stringSize.Height);
+                }
+                else if (port.status == 1)
+                {
+                    String text = "root";
+                    var stringSizeText = g.MeasureString(text, drawFont);
+                    g.DrawString(text, drawFont, new SolidBrush(Color.Green), px - hPort / 2 , py + hPort / 2 - stringSizeText.Height);
+                }
+                else
+                {
+                    g.DrawString(drawProgMemory, drawFont, drawBrush, px + hPort / 2 - stringSize2.Width, py - hPort / 2 + stringSize.Height);
+                }
+
+                string prevMemory = (port.prevMemory == Int32.MaxValue ? "inf" : port.prevMemory.ToString());
+                String drawPrevMemory = $"{prevMemory}";
+                var stringSize3 = g.MeasureString(drawPrevMemory, drawFont);
+                g.DrawString(drawPrevMemory, drawFont, drawBrush, px + hPort / 2 - stringSize3.Width, py + hPort / 2 - stringSize3.Height);
             }
         }
 
