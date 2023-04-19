@@ -203,70 +203,21 @@ namespace STPnetApp
             Refresh();
         }
 
-        private void FormMain_KeyPress(object sender, KeyPressEventArgs e)
+        private void FormMain_KeyDown(object sender, KeyEventArgs e)
         {
-            int d = 5; 
-            if (e.KeyChar == 97) //97 a Left
-            {
-                foreach(var (i,b) in nw.bridges)
-                {
-                    nw.EditPosBridge(i, b.x + d, b.y);
-                }
-                foreach (var (i, l) in nw.links)
-                {
-                    nw.EditPosLink(i, l.x + d, l.y);
-                }
-                Refresh();
-            }
-            else if (e.KeyChar == 100) //100 d Right
-            {
-                foreach (var (i, b) in nw.bridges)
-                {
-                    nw.EditPosBridge(i, b.x - d, b.y);
-                }
-                foreach (var (i, l) in nw.links)
-                {
-                    nw.EditPosLink(i, l.x - d, l.y);
-                }
-                Refresh();
-            }
-            else if (e.KeyChar == 119) //119 w Up
-            {
-                foreach (var (i, b) in nw.bridges)
-                {
-                    nw.EditPosBridge(i, b.x, b.y + d);
-                }
-                foreach (var (i, l) in nw.links)
-                {
-                    nw.EditPosLink(i, l.x, l.y + d);
-                }
-                Refresh();
-            }
-            else if (e.KeyChar == 115) //115 s Down
-            {
-                foreach (var (i, b) in nw.bridges)
-                {
-                    nw.EditPosBridge(i, b.x, b.y - d);
-                }
-                foreach (var (i, l) in nw.links)
-                {
-                    nw.EditPosLink(i, l.x, l.y - d);
-                }
-                Refresh();
-            }
-            else if (e.KeyChar == 113) // q nextStep
+            if (e.KeyCode == Keys.Q) // q nextStep
             {
                 net.NextStep();
                 if (net.isCompleted)
                 {
-                    for (int i = 0; i<4; i++)
+                    for (int i = 0; i < 4; i++)
                     {
                         menuStrip1.Items[i].Enabled = true;
                     }
                 }
                 Refresh();
             }
-            else if (e.KeyChar == 101) // e end
+            else if (e.KeyCode == Keys.E) // e end
             {
                 net.CompleteModeling();
                 if (net.isCompleted)
@@ -328,8 +279,6 @@ namespace STPnetApp
             g.ScaleTransform(scale, scale);
             nw.ScaleTransform(scale);
             nw.Print(g,net);
-            
-            //g.DrawLine(new Pen(Color.Black, 1), new System.Drawing.Point(200, 200), new System.Drawing.Point(200, 300));
         }
 
         public void ClearStrip()
@@ -435,11 +384,6 @@ namespace STPnetApp
                         }
 
                         Refresh();
-                        /*typeObjectChoose1 = 0;
-                        idObjectChoose1 = 0;
-                        idBridgeChoose1 = 0;
-                        idPortChoose1 = 0;
-                        toolStripStatusLabel1.Text = "Element";*/
                     }
                 }
             }
@@ -567,15 +511,8 @@ namespace STPnetApp
 
             if (scale <= 0) scale = (float)0.0001;
 
-            //Paint += ScaleTransform;
             Refresh();
-            //Paint -= ScaleTransform;
+            
         }
-
-        /*public void ScaleTransform(object sender, PaintEventArgs e)
-        {
-            e.Graphics.ScaleTransform(scale,scale);
-            nw.ScaleTransform(scale, e.Graphics);
-        }*/
     }
 }

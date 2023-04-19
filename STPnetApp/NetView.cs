@@ -326,14 +326,6 @@ namespace STPnetApp
                     }
                 }
 
-                /*foreach (var (b, pn) in l.connections)
-                {
-                    if (!links[l.id].ports.ContainsKey(b.id))
-                    {
-                        Point p = bridges[b.id].ports[pn];
-                        AddConnectionLink(l.id, b.id, p);
-                    }
-                }*/
             }
 
         }
@@ -354,36 +346,6 @@ namespace STPnetApp
                     EditPosPort(ib,ip,p.x,p.y);
                 }
             }
-
-            
-
-            //Point[] points = { };
-
-            //int i = 0;
-            /*foreach (var (ib, ps) in bridges)
-            {
-                *//*ps.x = (int)(ps.x * scale);
-                ps.y = (int)(ps.y * scale);*//*
-
-                EditPosBridge(ib,);
-                //points = points.Append(new Point(ps.x, ps.y)).ToArray();
-                foreach (var (ip, p) in ps.ports)
-                {
-                    p.x = (int)(p.x * scale);
-                    p.y = (int)(p.y * scale);
-                    //points = points.Append(new Point(p.x, p.y)).ToArray();
-                }
-            }
-
-            foreach (var (il, ps) in links)
-            {
-                ps.x = (int)(ps.x * scale);
-                ps.y = (int)(ps.y * scale);
-                //points = points.Append(new Point(ps.x, ps.y)).ToArray();
-            }*/
-
-            //if (points.Length == 0) return;
-            //g.Transform.TransformPoints(points);
         }
 
 
@@ -466,10 +428,6 @@ namespace STPnetApp
                 pen = new Pen(Color.FromArgb(181, 0, 181), penWeight);
                 drawBrush = new SolidBrush(Color.FromArgb(181, 0, 181));
             }
-            /*else if (port.statusPrint == 2)
-            {
-
-            }*/
 
             myPoint point = bridges[idBridge].ports[port.number];
             int px = point.x;
@@ -478,42 +436,7 @@ namespace STPnetApp
             g.DrawRectangle(pen, rect);
 
 
-            //g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
-            /*if (port.statusPrint == 1)
-            {
-                if (port.status == 1)
-                { 
-                    drawBrush = new SolidBrush(Color.Green);
-                    
-                }
-                else if (port.memory < port.progMemory)
-                {
-                    string progMemory = (port.progMemory == Int32.MaxValue ? "inf" : port.progMemory.ToString());
-                    String drawString2 = $"{progMemory}";
-                    g.DrawString(drawString2, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
-
-                    drawBrush = new SolidBrush(Color.Green);
-                    g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py);
-                }
-                else if (port.memory < port.prevMemory)
-                {
-                    drawBrush = new SolidBrush(Color.Green);
-                    g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
-
-                    drawBrush = new SolidBrush(Color.Red);
-                    string prevMemory = (port.prevMemory == Int32.MaxValue ? "inf" : port.prevMemory.ToString());
-                    String drawString2 = $"{prevMemory}";
-                    g.DrawString(drawString2, drawFont, drawBrush, px - hPort / 2, py);
-                }
-                else
-                {
-                    g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
-                }
-            }
-            else
-            {
-                g.DrawString(drawString, drawFont, drawBrush, px - hPort / 2, py - hPort / 2);
-            }*/
+            
             string memory = (port.memory == Int32.MaxValue ? "inf" : port.memory.ToString());
             String drawNumber = $"{port.number}";
             String drawMemory = $"{memory}";
@@ -531,9 +454,6 @@ namespace STPnetApp
                 g.DrawString(drawMemory, drawFont, drawBrush, px - (int)(stringSize.Width/2), py - (int)(stringSize.Height/2));
             }
                 
-
-            /*if (port.memory > port.progMemory) drawBrush = new SolidBrush(Color.Black);
-            else drawBrush = new SolidBrush(Color.Red);*/
 
             if (modeling)
             {
@@ -652,10 +572,7 @@ namespace STPnetApp
                     {
                         penCopy.CustomEndCap = new AdjustableArrowCap(4, 7);
                     }
-                    /*if (net.bridges[i].ports[p.id].statusPrint > 0)
-                    {
-                        penCopy.CustomEndCap = new AdjustableArrowCap(4, 7);
-                    }*/
+
 
                     int px = p.x;
                     int py = p.y;
@@ -676,9 +593,5 @@ namespace STPnetApp
             g.DrawString(drawString, drawFont, drawBrush, lx, ly);
         }
 
-        /*public void PrintLinkLists(Graphics g, Net net)
-        {
-
-        }*/
     }
 }
