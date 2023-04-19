@@ -287,6 +287,7 @@ namespace STPnetApp
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseUp);
+            this.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseWheel);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);

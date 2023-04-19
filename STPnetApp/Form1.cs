@@ -325,7 +325,10 @@ namespace STPnetApp
         {
             base.OnPaint(e);
             Graphics g = e.Graphics;
+            g.ScaleTransform(scale, scale);
+            nw.ScaleTransform(scale);
             nw.Print(g,net);
+            
             //g.DrawLine(new Pen(Color.Black, 1), new System.Drawing.Point(200, 200), new System.Drawing.Point(200, 300));
         }
 
@@ -346,7 +349,7 @@ namespace STPnetApp
                 flagMove = false;
                 return;
             }
-            nw.Find(e.X, e.Y, out int type, out int id, out int idb, out int idp);
+            nw.Find((int)(e.X * 1/scale), (int)(e.Y * 1/scale), out int type, out int id, out int idb, out int idp);
 
             if (e.Button == MouseButtons.Left)
             {
@@ -403,7 +406,7 @@ namespace STPnetApp
                                 if (MessageBox.Show("Добавить связь?", "AddConnection", MessageBoxButtons.YesNo) == DialogResult.Yes)
                                 {
                                     net.AddConnect(idObjectChoose2, idBridgeChoose1, idObjectChoose1);
-                                    Point point = nw.bridges[idBridgeChoose1].ports[idObjectChoose1];
+                                    myPoint point = nw.bridges[idBridgeChoose1].ports[idObjectChoose1];
                                     nw.AddConnectionLink(idObjectChoose2, idBridgeChoose1, point);
                                 }
                         }
@@ -413,7 +416,7 @@ namespace STPnetApp
                                 if (MessageBox.Show("Добавить связь?", "AddConnection", MessageBoxButtons.YesNo) == DialogResult.Yes)
                                 {
                                     net.AddConnect(idObjectChoose1, idBridgeChoose2, idObjectChoose2);
-                                    Point point = nw.bridges[idBridgeChoose2].ports[idObjectChoose2];
+                                    myPoint point = nw.bridges[idBridgeChoose2].ports[idObjectChoose2];
                                     nw.AddConnectionLink(idObjectChoose1, idBridgeChoose2, point);
                                 }
                                     
@@ -491,7 +494,7 @@ namespace STPnetApp
 
         private void FormMain_MouseDown(object sender, MouseEventArgs e)
         {
-            nw.Find(e.X, e.Y, out int type, out int id, out int idb, out int idp);
+            nw.Find((int)(e.X * 1 / scale), (int)(e.Y * 1 / scale), out int type, out int id, out int idb, out int idp);
             typeObjectMove = type;
             idObjectMove = id;
             idBridgeMove = idb;
@@ -499,8 +502,8 @@ namespace STPnetApp
             if (typeObjectMove == 0)
             {
                 Cursor.Current = Cursors.SizeAll;
-                prevPosition.X = e.X;
-                prevPosition.Y = e.Y;
+                prevPosition.X = (int)(e.X * 1 / scale);
+                prevPosition.Y = (int)(e.Y * 1 / scale);
             }
         }
 
@@ -510,32 +513,35 @@ namespace STPnetApp
             if (e.Button == MouseButtons.Left)
             {
                 flagMove = true;
+                int X = (int)(e.X * 1 / scale);
+                int Y = (int)(e.Y * 1 / scale);
                 //Debug.WriteLine(typeObjectMove.ToString());
                 if (typeObjectMove == 0)
                 {
+
                     foreach (var (i, b) in nw.bridges)
                     {
-                        nw.EditPosBridge(i, b.x + e.X - prevPosition.X, b.y + e.Y - prevPosition.Y);
+                        nw.EditPosBridge(i, b.x + X - prevPosition.X, b.y + Y - prevPosition.Y);
                     }
                     foreach (var (i, l) in nw.links)
                     {
-                        nw.EditPosLink(i, l.x + e.X - prevPosition.X, l.y + e.Y - prevPosition.Y);
+                        nw.EditPosLink(i, l.x + X - prevPosition.X, l.y + Y - prevPosition.Y);
                     }
                     Refresh();
-                    prevPosition.X = e.X;
-                    prevPosition.Y = e.Y;
+                    prevPosition.X = X;
+                    prevPosition.Y = Y;
                 }
                 else if (typeObjectMove == 1)
                 {
-                    nw.EditPosBridge(idObjectMove, e.X, e.Y);
+                    nw.EditPosBridge(idObjectMove, X, Y);
                 }
                 else if (typeObjectMove == 2)
                 {
-                    nw.EditPosPort(idBridgeMove, idObjectMove, e.X, e.Y);
+                    nw.EditPosPort(idBridgeMove, idObjectMove, X, Y);
                 }
                 else if (typeObjectMove == 3)
                 {
-                    nw.EditPosLink(idObjectMove, e.X, e.Y);
+                    nw.EditPosLink(idObjectMove, X, Y);
                 }
                 Refresh();
             }
@@ -549,5 +555,27 @@ namespace STPnetApp
             idPortMove = 0;
             Cursor.Current = Cursors.Default;
         }
+
+        float scale = 1;
+        private void FormMain_MouseWheel(object sender, MouseEventArgs e)
+        {
+            float k = (float)0.01;
+            if (e.Delta > 0)
+                scale += k;
+            else
+                scale -= k;
+
+            if (scale <= 0) scale = (float)0.0001;
+
+            //Paint += ScaleTransform;
+            Refresh();
+            //Paint -= ScaleTransform;
+        }
+
+        /*public void ScaleTransform(object sender, PaintEventArgs e)
+        {
+            e.Graphics.ScaleTransform(scale,scale);
+            nw.ScaleTransform(scale, e.Graphics);
+        }*/
     }
 }

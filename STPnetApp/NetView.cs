@@ -17,14 +17,16 @@ namespace STPnetApp
     {
         public int x;
         public int y;
-        public Dictionary<int, Point> ports;
+        //public Point point;
+        public Dictionary<int, myPoint> ports;
     }
     [Serializable]
-    public class Point
+    public class myPoint
     {
         public int id;
         public int x;
         public int y;
+        //public Point point;
     }
     [Serializable]
     public class NetView
@@ -128,7 +130,7 @@ namespace STPnetApp
             PointStruct ps = new();
             ps.x = x;
             ps.y = y;
-            ps.ports = new Dictionary<int, Point>();
+            ps.ports = new Dictionary<int, myPoint>();
             bridges.Add(id, ps);
         }
         public void DeleteBridge(int id)
@@ -151,7 +153,7 @@ namespace STPnetApp
                 p.y = p.y + (y - oldy);
             }
         }
-        public void AddPort(int idBridge, int idPort, Point p)
+        public void AddPort(int idBridge, int idPort, myPoint p)
         {
             int x = p.x;
             int y = p.y;
@@ -196,12 +198,12 @@ namespace STPnetApp
             bridges[idBridge].ports[idPort].x = x;
             bridges[idBridge].ports[idPort].y = y;
         }
-        public void AddLink(int id, int idb1, Point p1, int idb2, Point p2)
+        public void AddLink(int id, int idb1, myPoint p1, int idb2, myPoint p2)
         {
             PointStruct ps = new();
             ps.x = (int)((p1.x+p2.x)/2);
             ps.y = (int)((p1.y + p2.y)/2);
-            ps.ports = new Dictionary<int, Point>();
+            ps.ports = new Dictionary<int, myPoint>();
             ps.ports.Add(idb1, p1);
             ps.ports.Add(idb2, p2);
             links.Add(id, ps);
@@ -212,7 +214,7 @@ namespace STPnetApp
             links.Remove(id);
         }
 
-        public void AddConnectionLink(int id, int idb, Point p)
+        public void AddConnectionLink(int id, int idb, myPoint p)
         {
             if (links[id].ports.ContainsKey(idb)) return;
             links[id].ports.Add(idb, p);
@@ -270,10 +272,12 @@ namespace STPnetApp
                 {
                     if (!bridges[i].ports.ContainsKey(j))
                     {
-                        Point point = new();
+                        myPoint point = new();
                         point.id = j;
-                        point.x = 30;
-                        point.y = 30;
+                        /*point.x = 30;
+                        point.y = 30;*/
+                        point.x = bridges[i].x;
+                        point.y = bridges[i].y;
                         AddPort(i, j, point);
                     }
                 }
@@ -305,9 +309,9 @@ namespace STPnetApp
 
                     if (pair1.Key.ports[pair1.Value].Link == null || pair2.Key.ports[pair2.Value].Link == null) return;
 
-                    Point p1 = bridges[pair1.Key.id].ports[pair1.Value];
+                    myPoint p1 = bridges[pair1.Key.id].ports[pair1.Value];
                     p1.id = pair1.Value;
-                    Point p2 = bridges[pair2.Key.id].ports[pair2.Value];
+                    myPoint p2 = bridges[pair2.Key.id].ports[pair2.Value];
                     p2.id = pair2.Value;
                     AddLink(l.id, pair1.Key.id, p1, pair2.Key.id, p2);
 
@@ -316,7 +320,7 @@ namespace STPnetApp
                     {
                         var pair = l.connections.ElementAt(i - 1);
                         if (pair.Key.ports[pair.Value].Link == null) continue;
-                        Point p = bridges[pair.Key.id].ports[pair.Value];
+                        myPoint p = bridges[pair.Key.id].ports[pair.Value];
                         p.id = pair.Value;
                         AddConnectionLink(l.id, pair.Key.id, p);
                     }
@@ -333,6 +337,55 @@ namespace STPnetApp
             }
 
         }
+
+        public void ScaleTransform(float scale)
+        {
+            hBridge = (int)(200*scale); // need %2
+            if (hBridge % 2 != 0) hBridge++;
+            hPort = (int)(60 * scale); // need %2
+            if (hPort % 2 != 0) hPort++;
+            hLink = (int)(10 * scale); // need %2
+            if (hLink % 2 != 0) hLink++;
+
+            foreach (var (ib, ps) in bridges)
+            {
+                foreach (var (ip, p) in ps.ports)
+                {
+                    EditPosPort(ib,ip,p.x,p.y);
+                }
+            }
+
+            
+
+            //Point[] points = { };
+
+            //int i = 0;
+            /*foreach (var (ib, ps) in bridges)
+            {
+                *//*ps.x = (int)(ps.x * scale);
+                ps.y = (int)(ps.y * scale);*//*
+
+                EditPosBridge(ib,);
+                //points = points.Append(new Point(ps.x, ps.y)).ToArray();
+                foreach (var (ip, p) in ps.ports)
+                {
+                    p.x = (int)(p.x * scale);
+                    p.y = (int)(p.y * scale);
+                    //points = points.Append(new Point(p.x, p.y)).ToArray();
+                }
+            }
+
+            foreach (var (il, ps) in links)
+            {
+                ps.x = (int)(ps.x * scale);
+                ps.y = (int)(ps.y * scale);
+                //points = points.Append(new Point(ps.x, ps.y)).ToArray();
+            }*/
+
+            //if (points.Length == 0) return;
+            //g.Transform.TransformPoints(points);
+        }
+
 
         public void Print(Graphics g, Net net)
         {
@@ -418,7 +471,7 @@ namespace STPnetApp
 
             }*/
 
-            Point point = bridges[idBridge].ports[port.number];
+            myPoint point = bridges[idBridge].ports[port.number];
             int px = point.x;
             int py = point.y;
             Rectangle rect = new Rectangle(px - hPort / 2, py - hPort / 2, hPort, hPort);
