@@ -333,13 +333,6 @@ namespace STPnetApp
         private void nextStepToolStripMenuItem_Click(object sender, EventArgs e)
         {
             netApp.net.NextStep();
-            /*if (netApp.net.isCompleted)
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    menuStrip1.Items[i].Enabled = true;
-                }
-            }*/
             Refresh();
         }
 
