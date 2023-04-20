@@ -301,19 +301,28 @@ namespace STPnetApp
         private void completeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             netApp.net.CompleteModeling();
-            /*if (netApp.net.isCompleted)
-            {
-                for (int i = 0; i < 4; i++)
-                {
-                    menuStrip1.Items[i].Enabled = true;
-                }
-            }*/
             Refresh();
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             netApp.net.CompleteModeling();
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                Process.Start(new ProcessStartInfo(".\\Help\\help.html") { UseShellExecute = true });
+            }
+            catch
+            {
+                string message = "Ошибка открытия файла help.html";
+                string caption = "Упс";
+                MessageBoxButtons buttons = MessageBoxButtons.OK;
+                MessageBox.Show(message, caption, buttons);
+                return;
+            }
         }
 
         private void FormMain_Load(object sender, EventArgs e)
