@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using STPnet;
 using System.Diagnostics;
-
+using System.IO;
 
 namespace STPnetApp
 {
@@ -20,18 +20,28 @@ namespace STPnetApp
             InitializeComponent();
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
             SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+            myDelegate = new EnableMenuDelegate(EnableMenuMetod);
         }
 
-        public Net net;
-        public NetView nw;
+        public NetApp netApp;
+
+        public delegate void EnableMenuDelegate();
+        public EnableMenuDelegate myDelegate;
         int typeObjectMove, idObjectMove, idBridgeMove, idPortMove;
         int typeObjectChoose1, idObjectChoose1, idBridgeChoose1, idPortChoose1;
         int typeObjectChoose2, idObjectChoose2, idBridgeChoose2, idPortChoose2;
+        bool flagMove = false;
+        System.Drawing.Point prevPosition;
+        float scale = 1;
+        string filenamePath = null;
+        string Filename {
+            get { return Path.GetFileName(filenamePath); }
+        }
+        
 
-        // modeling = false;
         private void editLinkToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            int weight = net.links[idObjectChoose1].weight;
+            int weight = netApp.net.links[idObjectChoose1].weight;
             LinkDialog ld = new LinkDialog(weight);
             ld.ShowDialog();
             if (ld.DialogResult == DialogResult.OK)
@@ -39,7 +49,7 @@ namespace STPnetApp
                 weight = ld.weight;
                 if (weight != 0)
                 {
-                    net.EditLink(idObjectChoose1, weight);
+                    netApp.net.EditLink(idObjectChoose1, weight);
                 }
             }
             ClearStrip();
@@ -48,11 +58,7 @@ namespace STPnetApp
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            net.DisconnectLink(idObjectChoose1, idBridgeChoose1, idPortChoose1);
-            //nw.DeleteConnectionLink(idObjectChoose1, idBridgeChoose1, idPortChoose1);
-
-            //net.UpdateLinks();
-            //nw.UpdateLinks();
+            netApp.net.DisconnectLink(idObjectChoose1, idBridgeChoose1, idPortChoose1);
 
             ClearStrip();
             Refresh();
@@ -61,7 +67,7 @@ namespace STPnetApp
         private void editBridgeToolStripMenuItem_Click(object sender, EventArgs e)
         {
             int idBridge = idObjectChoose1;
-            string priority = net.bridges[idBridge].priority.ToString("X");
+            string priority = netApp.net.bridges[idBridge].priority.ToString("X");
             BridgeDialog bd = new BridgeDialog(idBridge, priority);
             bd.ShowDialog();
             if (bd.DialogResult == DialogResult.OK)
@@ -72,7 +78,7 @@ namespace STPnetApp
                     ClearStrip();
                     return;
                 }
-                net.EditBridge(idBridge, priority);
+                netApp.net.EditBridge(idBridge, priority);
                 ClearStrip();
                 Refresh();
             }
@@ -80,10 +86,7 @@ namespace STPnetApp
 
         private void deleteBridgeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            net.DeleteBridge(idObjectChoose1);
-            //net.UpdateLinks();
-            //nw.DeleteBridge(idObjectChoose1);
-            //nw.UpdateLinks();
+            netApp.net.DeleteBridge(idObjectChoose1);
 
             ClearStrip();
             Refresh();
@@ -99,7 +102,7 @@ namespace STPnetApp
                 number = pd.number;
                 if (number != 0)
                 {
-                    net.AddPort(idObjectChoose1, number);
+                    netApp.net.AddPort(idObjectChoose1, number);
                 }
             }
             ClearStrip();
@@ -108,10 +111,7 @@ namespace STPnetApp
 
         private void deletePortToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            net.DeletePort(idBridgeChoose1, idObjectChoose1);
-            //net.UpdateLinks();
-            //nw.DeletePort(idBridgeChoose1, idObjectChoose1);
-            //nw.UpdateLinks();
+            netApp.net.DeletePort(idBridgeChoose1, idObjectChoose1);
 
             ClearStrip();
             Refresh();
@@ -119,27 +119,56 @@ namespace STPnetApp
 
         private void rootBridgeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            net.Reset();
-            net.RootBridge();
+            netApp.net.Reset();
+            netApp.net.RootBridge();
             Refresh();
+        }
+
+
+        
+
+        public void EnableMenuMetod()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                menuStrip1.Items[i].Enabled = true;
+            }
+        }
+
+        async void EnableMenu(FormMain form)
+        {
+            while (!netApp.net.isCompleted)
+            {
+                await Task.Delay(100);
+            }
+
+            form.Invoke(form.myDelegate);
+            
+        }
+
+        void DisableMenu()
+        {
+            for (int i = 0; i < 4; i++)
+            {
+                menuStrip1.Items[i].Enabled = false;
+            }
         }
 
         private void rootPortsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            net.Reset();
-            net.RootBridge();
+            netApp.net.Reset();
+            netApp.net.RootBridge();
             if (stepByStepToolStripMenuItem.Checked)//checkBoxModeling.Checked
             {
-                net.RootPorts(1);
-                for (int i = 0; i < 4; i++)
-                {
-                    menuStrip1.Items[i].Enabled = false;
-                }
+                netApp.net.RootPorts(1);
+                DisableMenu();
+                var t = new Task(() => EnableMenu(this));
+                t.Start();
             }
             else
             {
-                net.RootPorts(0);
-                net.waitComplete();
+                netApp.net.RootPorts(0);
+                netApp.net.waitComplete();
             }
 
             Refresh();
@@ -147,22 +176,21 @@ namespace STPnetApp
 
         private void desPortsToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            net.Reset();
-            net.RootBridge();
-            net.RootPorts(0);
-            net.waitComplete();
+            netApp.net.Reset();
+            netApp.net.RootBridge();
+            netApp.net.RootPorts(0);
+            netApp.net.waitComplete();
             if (stepByStepToolStripMenuItem.Checked)//checkBoxModeling.Checked
             {
-                net.NonRootPorts(1);
-                for (int i = 0; i < 4; i++)
-                {
-                    menuStrip1.Items[i].Enabled = false;
-                }
+                netApp.net.NonRootPorts(1);
+                DisableMenu();
+                var t = new Task(() => EnableMenu(this));
+                t.Start();
             }
             else
             {
-                net.NonRootPorts(0);
-                net.waitComplete();
+                netApp.net.NonRootPorts(0);
+                netApp.net.waitComplete();
 
             }
 
@@ -171,70 +199,99 @@ namespace STPnetApp
 
         private void resetToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            net.Reset();
+            netApp.net.Reset();
             Refresh();
         }
 
         private void clearToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            net = new Net();
-            nw = new NetView();
+            netApp.net = new Net();
+            netApp.nw = new NetView();
             Refresh();
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (saveFileDialog1.ShowDialog() == DialogResult.Cancel)
+            if (filenamePath == null)
+            {
+                if (saveFileDialog1.ShowDialog() == DialogResult.Cancel)
+                    return;
+                filenamePath = saveFileDialog1.FileName;
+            }
+
+            try
+            {
+                netApp.Save(filenamePath);
+            }
+            catch
+            {
+                string message = "Ошибка сохранения файла";
+                string caption = "Упс";
+                MessageBoxButtons buttons = MessageBoxButtons.OK;
+                MessageBox.Show(message, caption, buttons);
                 return;
-            string filename = saveFileDialog1.FileName;
-            net.Save(filename);
-            nw.Save(filename);
+            }
+            Text = $"STPnet: {Filename}";
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             if (openFileDialog1.ShowDialog() == DialogResult.Cancel)
                 return;
-            string filename = openFileDialog1.FileName;
-            //net = new Net();
-            //nw = new NetView();
-            net = Net.Load(filename);
-            nw = NetView.Load(filename);
+            filenamePath = openFileDialog1.FileName;
+
+            try
+            {
+                netApp = NetApp.Load(filenamePath);
+            }
+            catch
+            {
+                string message = "Ошибка загрузки файла";
+                string caption = "Упс";
+                MessageBoxButtons buttons = MessageBoxButtons.OK;
+                MessageBox.Show(message, caption, buttons);
+                netApp = new NetApp();
+            }
+
+            Text = $"STPnet: {Filename}";
             Refresh();
         }
 
-        private void FormMain_KeyDown(object sender, KeyEventArgs e)
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            if (e.KeyCode == Keys.Q) // q nextStep
+            netApp = new NetApp();
+            filenamePath = null;
+            Text = $"STPnet";
+            scale = 1;
+            ClearStrip();
+            Refresh();
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == DialogResult.Cancel)
+                return;
+            filenamePath = saveFileDialog1.FileName;
+
+            try
             {
-                net.NextStep();
-                if (net.isCompleted)
-                {
-                    for (int i = 0; i < 4; i++)
-                    {
-                        menuStrip1.Items[i].Enabled = true;
-                    }
-                }
-                Refresh();
+                netApp.Save(filenamePath);
             }
-            else if (e.KeyCode == Keys.E) // e end
+            catch
             {
-                net.CompleteModeling();
-                if (net.isCompleted)
-                {
-                    for (int i = 0; i < 4; i++)
-                    {
-                        menuStrip1.Items[i].Enabled = true;
-                    }
-                }
-                Refresh();
+                string message = "Ошибка сохранения файла";
+                string caption = "Упс";
+                MessageBoxButtons buttons = MessageBoxButtons.OK;
+                MessageBox.Show(message, caption, buttons);
+                return;
             }
+            Text = $"STPnet: {Filename}";
         }
 
         private void stepByStepToolStripMenuItem_Click(object sender, EventArgs e)
         {
             //modeling = true;
-            if (!net.isCompleted) return;
+            if (!netApp.net.isCompleted) return;
             if (stepByStepToolStripMenuItem.Checked) stepByStepToolStripMenuItem.Checked = false;
             else stepByStepToolStripMenuItem.Checked = true;
             //(ToolStripMenuItem)(menuStrip1.Items["stepByStepToolStripMenuItem"]).DropDownItems
@@ -243,32 +300,37 @@ namespace STPnetApp
 
         private void completeToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            net.CompleteModeling();
-            if (net.isCompleted)
+            netApp.net.CompleteModeling();
+            /*if (netApp.net.isCompleted)
             {
                 for (int i = 0; i < 4; i++)
                 {
                     menuStrip1.Items[i].Enabled = true;
                 }
-            }
+            }*/
             Refresh();
         }
 
         private void FormMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            net.CompleteModeling();
+            netApp.net.CompleteModeling();
         }
-
-        bool flagMove = false;
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            net = new Net();
-            nw = new NetView();
+            netApp = new NetApp();
         }
 
-        private void addBridgeToolStripMenuItem_Click_1(object sender, EventArgs e)
+        private void nextStepToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            netApp.net.NextStep();
+            /*if (netApp.net.isCompleted)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    menuStrip1.Items[i].Enabled = true;
+                }
+            }*/
             Refresh();
         }
 
@@ -277,8 +339,8 @@ namespace STPnetApp
             base.OnPaint(e);
             Graphics g = e.Graphics;
             g.ScaleTransform(scale, scale);
-            nw.ScaleTransform(scale);
-            nw.Print(g,net);
+            netApp.nw.ScaleTransform(scale);
+            netApp.nw.Print(g, netApp.net);
         }
 
         public void ClearStrip()
@@ -291,14 +353,14 @@ namespace STPnetApp
         }
         private void FormMain_MouseClick(object sender, MouseEventArgs e)
         {
-            if (!net.isCompleted) return;
+            if (!netApp.net.isCompleted) return;
             if (flagMove)
             {
                 ClearStrip();
                 flagMove = false;
                 return;
             }
-            nw.Find((int)(e.X * 1/scale), (int)(e.Y * 1/scale), out int type, out int id, out int idb, out int idp);
+            netApp.nw.Find((int)(e.X * 1/scale), (int)(e.Y * 1/scale), out int type, out int id, out int idb, out int idp);
 
             if (e.Button == MouseButtons.Left)
             {
@@ -329,8 +391,8 @@ namespace STPnetApp
 
                         if (typeObjectChoose1 == 2 && typeObjectChoose2 == 2) //addLink
                         {
-                            if (!net.PortIsEmpty(idBridgeChoose1, idObjectChoose1)
-                                || !net.PortIsEmpty(idBridgeChoose2, idObjectChoose2)
+                            if (!netApp.net.PortIsEmpty(idBridgeChoose1, idObjectChoose1)
+                                || !netApp.net.PortIsEmpty(idBridgeChoose2, idObjectChoose2)
                                 || idBridgeChoose1 == idBridgeChoose2)
                             {
                                 ClearStrip();
@@ -344,29 +406,29 @@ namespace STPnetApp
                                 weight = ld.weight;
                                 if (weight != 0)
                                 {
-                                    net.AddLink(idBridgeChoose1, idObjectChoose1, idBridgeChoose2, idObjectChoose2, weight);
+                                    netApp.net.AddLink(idBridgeChoose1, idObjectChoose1, idBridgeChoose2, idObjectChoose2, weight);
                                 }
                             }
                             ClearStrip();
                         }
                         else if (typeObjectChoose1 == 2 && typeObjectChoose2 == 3)
                         {
-                            if (net.PortIsEmpty(idBridgeChoose1, idObjectChoose1))
+                            if (netApp.net.PortIsEmpty(idBridgeChoose1, idObjectChoose1))
                                 if (MessageBox.Show("Добавить связь?", "AddConnection", MessageBoxButtons.YesNo) == DialogResult.Yes)
                                 {
-                                    net.AddConnect(idObjectChoose2, idBridgeChoose1, idObjectChoose1);
-                                    myPoint point = nw.bridges[idBridgeChoose1].ports[idObjectChoose1];
-                                    nw.AddConnectionLink(idObjectChoose2, idBridgeChoose1, point);
+                                    netApp.net.AddConnect(idObjectChoose2, idBridgeChoose1, idObjectChoose1);
+                                    myPoint point = netApp.nw.bridges[idBridgeChoose1].ports[idObjectChoose1];
+                                    netApp.nw.AddConnectionLink(idObjectChoose2, idBridgeChoose1, point);
                                 }
                         }
                         else if (typeObjectChoose1 == 3 && typeObjectChoose2 == 2)
                         {
-                            if (net.PortIsEmpty(idBridgeChoose2, idObjectChoose2))
+                            if (netApp.net.PortIsEmpty(idBridgeChoose2, idObjectChoose2))
                                 if (MessageBox.Show("Добавить связь?", "AddConnection", MessageBoxButtons.YesNo) == DialogResult.Yes)
                                 {
-                                    net.AddConnect(idObjectChoose1, idBridgeChoose2, idObjectChoose2);
-                                    myPoint point = nw.bridges[idBridgeChoose2].ports[idObjectChoose2];
-                                    nw.AddConnectionLink(idObjectChoose1, idBridgeChoose2, point);
+                                    netApp.net.AddConnect(idObjectChoose1, idBridgeChoose2, idObjectChoose2);
+                                    myPoint point = netApp.nw.bridges[idBridgeChoose2].ports[idObjectChoose2];
+                                    netApp.nw.AddConnectionLink(idObjectChoose1, idBridgeChoose2, point);
                                 }
                                     
                         }
@@ -410,10 +472,10 @@ namespace STPnetApp
                             ClearStrip();
                             return;
                         }
-                        net.AddBridge(idBridge, priority);
+                        netApp.net.AddBridge(idBridge, priority);
                         ClearStrip();
                         Refresh();
-                        nw.EditPosBridge(idBridge, e.X, e.Y);
+                        netApp.nw.EditPosBridge(idBridge, e.X, e.Y);
                         Refresh();
                     }
                 }
@@ -438,7 +500,7 @@ namespace STPnetApp
 
         private void FormMain_MouseDown(object sender, MouseEventArgs e)
         {
-            nw.Find((int)(e.X * 1 / scale), (int)(e.Y * 1 / scale), out int type, out int id, out int idb, out int idp);
+            netApp.nw.Find((int)(e.X * 1 / scale), (int)(e.Y * 1 / scale), out int type, out int id, out int idb, out int idp);
             typeObjectMove = type;
             idObjectMove = id;
             idBridgeMove = idb;
@@ -451,7 +513,7 @@ namespace STPnetApp
             }
         }
 
-        System.Drawing.Point prevPosition;
+        
         private void FormMain_MouseMove(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -463,13 +525,13 @@ namespace STPnetApp
                 if (typeObjectMove == 0)
                 {
 
-                    foreach (var (i, b) in nw.bridges)
+                    foreach (var (i, b) in netApp.nw.bridges)
                     {
-                        nw.EditPosBridge(i, b.x + X - prevPosition.X, b.y + Y - prevPosition.Y);
+                        netApp.nw.EditPosBridge(i, b.x + X - prevPosition.X, b.y + Y - prevPosition.Y);
                     }
-                    foreach (var (i, l) in nw.links)
+                    foreach (var (i, l) in netApp.nw.links)
                     {
-                        nw.EditPosLink(i, l.x + X - prevPosition.X, l.y + Y - prevPosition.Y);
+                        netApp.nw.EditPosLink(i, l.x + X - prevPosition.X, l.y + Y - prevPosition.Y);
                     }
                     Refresh();
                     prevPosition.X = X;
@@ -477,15 +539,15 @@ namespace STPnetApp
                 }
                 else if (typeObjectMove == 1)
                 {
-                    nw.EditPosBridge(idObjectMove, X, Y);
+                    netApp.nw.EditPosBridge(idObjectMove, X, Y);
                 }
                 else if (typeObjectMove == 2)
                 {
-                    nw.EditPosPort(idBridgeMove, idObjectMove, X, Y);
+                    netApp.nw.EditPosPort(idBridgeMove, idObjectMove, X, Y);
                 }
                 else if (typeObjectMove == 3)
                 {
-                    nw.EditPosLink(idObjectMove, X, Y);
+                    netApp.nw.EditPosLink(idObjectMove, X, Y);
                 }
                 Refresh();
             }
@@ -500,7 +562,7 @@ namespace STPnetApp
             Cursor.Current = Cursors.Default;
         }
 
-        float scale = 1;
+        
         private void FormMain_MouseWheel(object sender, MouseEventArgs e)
         {
             float k = (float)0.01;

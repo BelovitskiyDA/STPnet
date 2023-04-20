@@ -47,17 +47,35 @@ namespace STPnetApp
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
-            using FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
-            formatter.Serialize(fs, this);
+            try
+            {
+                using FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
+                formatter.Serialize(fs, this);
+            }
+            catch
+            {
+                return;
+            }
         }
 
         public static NetView Load(string filename)
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
-            using FileStream fs = new FileStream(filename, FileMode.OpenOrCreate);
-            NetView nw = (NetView)formatter.Deserialize(fs);
-            return nw;
+            NetView nw;
+
+            using (FileStream fs = new FileStream(filename, FileMode.OpenOrCreate))
+            {
+                try
+                {
+                    nw = (NetView)formatter.Deserialize(fs);
+                }
+                catch
+                {
+                    nw = new NetView();
+                }
+                return nw;
+            }
         }
 
         public static int Funct(int x, double k, double b)
@@ -476,6 +494,8 @@ namespace STPnetApp
                     String text = "root";
                     var stringSizeText = g.MeasureString(text, drawFont);
                     g.DrawString(text, drawFont, new SolidBrush(Color.Green), px - hPort / 2 , py + hPort / 2 - stringSizeText.Height);
+
+                    g.DrawString(drawProgMemory, drawFont, drawBrush, px + hPort / 2 - stringSize2.Width, py - hPort / 2 + stringSize.Height);
                 }
                 else
                 {

@@ -18,7 +18,7 @@ namespace STPnet
 
         private int maxLinkId;
         [NonSerialized]
-        public EventWaitHandle ev1, ev2, ev3; //ev4; //new EventWaitHandle(true, EventResetMode.AutoReset, "ev1")
+        public EventWaitHandle ev1, ev2, ev3;
 
         [NonSerialized]
         Thread myThread;
@@ -31,74 +31,29 @@ namespace STPnet
             maxLinkId = 0;
             links = new Dictionary<int, Link>();
             bridges = new Dictionary<int, Bridge>();
-            isCompleted = true;
+            InitEvents();
+        }
 
+        public void InitEvents()
+        {
+            isCompleted = true;
             ev1 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev1");
             ev2 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev2");
             ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3");
         }
-        /*public Net(int i) 
-        {
-            maxLinkId = 0;
-            links = new Dictionary<int, Link>();
-            bridges = new Dictionary<int, Bridge>();
-
-            Bridge bridge1 = new Bridge(1, "A7");
-            bridges.Add(bridge1.id, bridge1);
-            bridge1.AddPort(1);
-            bridge1.AddPort(2);
-
-            Bridge bridge2 = new Bridge(2, "C1");
-            bridges.Add(bridge2.id, bridge2);
-            bridge2.AddPort(1);
-            bridge2.AddPort(2);
-            bridge2.AddPort(3);
-
-            Bridge bridge3 = new Bridge(3, "64");
-            bridges.Add(bridge3.id, bridge3);
-            bridge3.AddPort(1);
-            bridge3.AddPort(2);
-
-            Bridge bridge4 = new Bridge(4, "F5");
-            bridges.Add(bridge4.id, bridge4);
-            bridge4.AddPort(1);
-            bridge4.AddPort(2);
-            bridge4.AddPort(3);
-
-            Bridge bridge5 = new Bridge(5, "54");
-            bridges.Add(bridge5.id, bridge5);
-            bridge5.AddPort(1);
-            bridge5.AddPort(2);
-
-
-            Link link1 = new Link(1, bridge1, 1, bridge2, 1, 19);
-            links.Add(link1.id, link1);
-
-            Link link2 = new Link(2, bridge1, 2, bridge3, 1, 19);
-            links.Add(link2.id, link2);
-
-            Link link3 = new Link(3, bridge3, 2, bridge4, 1, 19);
-            links.Add(link3.id, link3);
-
-            Link link4 = new Link(4, bridge4, 3, bridge5, 2, 4);
-            links.Add(link4.id, link4);
-
-            Link link5 = new Link(5, bridge5, 1, bridge2, 3, 19);
-            links.Add(link5.id, link5);
-
-            Link link6 = new Link(6, bridge2, 2, bridge4, 2, 100);
-            links.Add(link6.id, link6);
-
-            maxLinkId = 6;
-        }*/
-
-        public void Save(string filename)
+        /*public void Save(string filename)
         {
             BinaryFormatter formatter = new BinaryFormatter();
-
-            using (FileStream fs = new FileStream(filename+"net", FileMode.OpenOrCreate))
+            try
             {
-                formatter.Serialize(fs, this);
+                using (FileStream fs = new FileStream(filename + "net", FileMode.OpenOrCreate))
+                {
+                    formatter.Serialize(fs, this);
+                }
+            }
+            catch
+            {
+                return;
             }
         }
 
@@ -106,16 +61,26 @@ namespace STPnet
         {
             BinaryFormatter formatter = new BinaryFormatter();
 
-            using (FileStream fs = new FileStream(filename+"net", FileMode.OpenOrCreate))
+            Net net;
+
+            using (FileStream fs = new FileStream(filename + "net", FileMode.OpenOrCreate))
             {
-                Net net = (Net)formatter.Deserialize(fs);
+                try
+                {
+                    net = (Net)formatter.Deserialize(fs);
+                }
+                catch
+                {
+                    net = new Net();
+                }
                 net.isCompleted = true;
                 net.ev1 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev1");
                 net.ev2 = new EventWaitHandle(false, EventResetMode.AutoReset, "ev2");
                 net.ev3 = new EventWaitHandle(false, EventResetMode.ManualReset, "ev3");
                 return net;
             }
-        }
+            
+        }*/
 
         public void AddBridge(int id, string priority)
         {
@@ -273,11 +238,8 @@ namespace STPnet
 
         public void NextStep()
         {
-            //TODO: wait2event and set1event
             if (ev1 == null) return;
             ev1.Set();
-            //ev2.WaitOne();
-            //SetRootPorts();
         }
         
         
@@ -296,13 +258,7 @@ namespace STPnet
             isCompleted = true;
             myThread = null;
             CheckThread = null;
-            /*ev1.Dispose();
-            ev1 = null;
-            ev2.Dispose();
-            ev2 = null;
-            ev3.Dispose();
-            ev3 = null;*/
-            //ev3.Reset();
+
             return;
         }
 

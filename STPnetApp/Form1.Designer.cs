@@ -32,8 +32,10 @@ namespace STPnetApp
             this.components = new System.ComponentModel.Container();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stepsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rootBridgeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.rootPortsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -42,6 +44,7 @@ namespace STPnetApp
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.modelingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.stepByStepToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.nextStepToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.completeToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -81,25 +84,42 @@ namespace STPnetApp
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.openToolStripMenuItem,
             this.saveToolStripMenuItem,
-            this.openToolStripMenuItem});
+            this.saveAsToolStripMenuItem,
+            this.newToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(69, 29);
             this.fileToolStripMenuItem.Text = "Файл";
             // 
-            // saveToolStripMenuItem
-            // 
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(200, 34);
-            this.saveToolStripMenuItem.Text = "Сохранить";
-            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
-            // 
             // openToolStripMenuItem
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(200, 34);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
             this.openToolStripMenuItem.Text = "Открыть";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
+            // 
+            // saveToolStripMenuItem
+            // 
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.saveToolStripMenuItem.Text = "Сохранить";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // saveAsToolStripMenuItem
+            // 
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.saveAsToolStripMenuItem.Text = "Сохранить как";
+            this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // newToolStripMenuItem
+            // 
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(270, 34);
+            this.newToolStripMenuItem.Text = "Новый";
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // stepsToolStripMenuItem
             // 
@@ -110,26 +130,28 @@ namespace STPnetApp
             this.stepsToolStripMenuItem.Name = "stepsToolStripMenuItem";
             this.stepsToolStripMenuItem.Size = new System.Drawing.Size(78, 29);
             this.stepsToolStripMenuItem.Text = "Этапы";
-            this.stepsToolStripMenuItem.Click += new System.EventHandler(this.addBridgeToolStripMenuItem_Click_1);
             // 
             // rootBridgeToolStripMenuItem
             // 
             this.rootBridgeToolStripMenuItem.Name = "rootBridgeToolStripMenuItem";
-            this.rootBridgeToolStripMenuItem.Size = new System.Drawing.Size(208, 34);
+            this.rootBridgeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D1)));
+            this.rootBridgeToolStripMenuItem.Size = new System.Drawing.Size(269, 34);
             this.rootBridgeToolStripMenuItem.Text = "Root Bridge";
             this.rootBridgeToolStripMenuItem.Click += new System.EventHandler(this.rootBridgeToolStripMenuItem_Click);
             // 
             // rootPortsToolStripMenuItem
             // 
             this.rootPortsToolStripMenuItem.Name = "rootPortsToolStripMenuItem";
-            this.rootPortsToolStripMenuItem.Size = new System.Drawing.Size(208, 34);
+            this.rootPortsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D2)));
+            this.rootPortsToolStripMenuItem.Size = new System.Drawing.Size(269, 34);
             this.rootPortsToolStripMenuItem.Text = "Root Ports";
             this.rootPortsToolStripMenuItem.Click += new System.EventHandler(this.rootPortsToolStripMenuItem_Click);
             // 
             // desPortsToolStripMenuItem
             // 
             this.desPortsToolStripMenuItem.Name = "desPortsToolStripMenuItem";
-            this.desPortsToolStripMenuItem.Size = new System.Drawing.Size(208, 34);
+            this.desPortsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.D3)));
+            this.desPortsToolStripMenuItem.Size = new System.Drawing.Size(269, 34);
             this.desPortsToolStripMenuItem.Text = "Des Ports";
             this.desPortsToolStripMenuItem.Click += new System.EventHandler(this.desPortsToolStripMenuItem_Click);
             // 
@@ -151,6 +173,7 @@ namespace STPnetApp
             // 
             this.modelingToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.stepByStepToolStripMenuItem,
+            this.nextStepToolStripMenuItem,
             this.completeToolStripMenuItem});
             this.modelingToolStripMenuItem.Name = "modelingToolStripMenuItem";
             this.modelingToolStripMenuItem.Size = new System.Drawing.Size(163, 29);
@@ -159,14 +182,23 @@ namespace STPnetApp
             // stepByStepToolStripMenuItem
             // 
             this.stepByStepToolStripMenuItem.Name = "stepByStepToolStripMenuItem";
-            this.stepByStepToolStripMenuItem.Size = new System.Drawing.Size(203, 34);
+            this.stepByStepToolStripMenuItem.Size = new System.Drawing.Size(312, 34);
             this.stepByStepToolStripMenuItem.Text = "По шагам";
             this.stepByStepToolStripMenuItem.Click += new System.EventHandler(this.stepByStepToolStripMenuItem_Click);
+            // 
+            // nextStepToolStripMenuItem
+            // 
+            this.nextStepToolStripMenuItem.Name = "nextStepToolStripMenuItem";
+            this.nextStepToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Q)));
+            this.nextStepToolStripMenuItem.Size = new System.Drawing.Size(312, 34);
+            this.nextStepToolStripMenuItem.Text = "Следующий шаг";
+            this.nextStepToolStripMenuItem.Click += new System.EventHandler(this.nextStepToolStripMenuItem_Click);
             // 
             // completeToolStripMenuItem
             // 
             this.completeToolStripMenuItem.Name = "completeToolStripMenuItem";
-            this.completeToolStripMenuItem.Size = new System.Drawing.Size(203, 34);
+            this.completeToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.E)));
+            this.completeToolStripMenuItem.Size = new System.Drawing.Size(312, 34);
             this.completeToolStripMenuItem.Text = "Завершить";
             this.completeToolStripMenuItem.Click += new System.EventHandler(this.completeToolStripMenuItem_Click);
             // 
@@ -282,7 +314,6 @@ namespace STPnetApp
             this.Text = "STPnet";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.FormMain_FormClosing);
             this.Load += new System.EventHandler(this.FormMain_Load);
-            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.FormMain_KeyDown);
             this.MouseClick += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseClick);
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.FormMain_MouseMove);
@@ -328,6 +359,9 @@ namespace STPnetApp
         private System.Windows.Forms.ToolStripMenuItem modelingToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem stepByStepToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem completeToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem nextStepToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem saveAsToolStripMenuItem;
     }
 }
 
