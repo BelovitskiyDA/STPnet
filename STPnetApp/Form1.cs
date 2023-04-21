@@ -119,13 +119,11 @@ namespace STPnetApp
 
         private void rootBridgeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!netApp.net.isCompleted) return;
             netApp.net.Reset();
             netApp.net.RootBridge();
             Refresh();
         }
-
-
-        
 
         public void EnableMenuMetod()
         {
@@ -156,6 +154,7 @@ namespace STPnetApp
 
         private void rootPortsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!netApp.net.isCompleted) return;
             netApp.net.Reset();
             netApp.net.RootBridge();
             if (stepByStepToolStripMenuItem.Checked)//checkBoxModeling.Checked
@@ -176,6 +175,7 @@ namespace STPnetApp
 
         private void desPortsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!netApp.net.isCompleted) return;
             netApp.net.Reset();
             netApp.net.RootBridge();
             netApp.net.RootPorts(0);
@@ -212,6 +212,7 @@ namespace STPnetApp
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (!netApp.net.isCompleted) return;
             if (filenamePath == null)
             {
                 if (saveFileDialog1.ShowDialog() == DialogResult.Cancel)
