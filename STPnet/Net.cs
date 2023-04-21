@@ -244,7 +244,7 @@ namespace STPnet
         
         
 
-        public void CheckEnd(int flag)
+        public void CheckEnd(int flag, int threadMode)
         {
             myThread.Join();
             if (flag == 0)
@@ -257,7 +257,7 @@ namespace STPnet
             }
             isCompleted = true;
             myThread = null;
-            CheckThread = null;
+            if (threadMode != 0) CheckThread = null;
 
             return;
         }
@@ -265,7 +265,8 @@ namespace STPnet
         public void waitComplete()
         {
             CheckThread.Join();
-            
+            CheckThread = null;
+
         }
 
         void StartModeling(int mode, int threadMode, Bridge b)
@@ -288,7 +289,7 @@ namespace STPnet
             myThread = new Thread(() => b.FirstPocket(mode));
             myThread.Start();
 
-            CheckThread = new Thread(() => CheckEnd(mode));
+            CheckThread = new Thread(() => CheckEnd(mode, threadMode));
             CheckThread.Start();
             return;
         }

@@ -301,6 +301,7 @@ namespace STPnetApp
 
         private void completeToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (netApp.net.isCompleted) return;
             netApp.net.CompleteModeling();
             Refresh();
         }
@@ -333,6 +334,7 @@ namespace STPnetApp
 
         private void nextStepToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            if (netApp.net.isCompleted) return;
             netApp.net.NextStep();
             Refresh();
         }
